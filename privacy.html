@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — YAARD Caribbean PFP Generator</title>
+<meta name="description" content="YAARD Privacy Policy — how we collect, use, and protect your data on the Caribbean PFP Generator.">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #F5C842;
+    --rust: #D4522A;
+    --green: #1A5C3A;
+    --cream: #FDF6E3;
+    --deep: #0D0D0D;
+    --warm: #F9EDD4;
+    --text: #1A1208;
+    --muted: #6B5C3E;
+    --card-bg: #FFFAF2;
+    --border: #E8D8B8;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  body::before {
+    content:'';
+    position:fixed; inset:0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events:none; z-index:0;
+  }
+
+  /* NAV */
+  nav {
+    display: flex; align-items:center; justify-content:space-between;
+    padding: 1.25rem 2rem;
+    border-bottom: 1px solid var(--border);
+    background: rgba(253,246,227,0.9);
+    backdrop-filter: blur(12px);
+    position: sticky; top:0; z-index:100;
+  }
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 1.5rem;
+    letter-spacing: -0.03em; color: var(--deep);
+    text-decoration: none;
+  }
+  .logo span { color: var(--gold); }
+  .logo-sub {
+    font-size: 10px; font-weight: 400;
+    color: var(--muted); letter-spacing: 0.12em;
+    text-transform: uppercase; display:block; margin-top:-3px;
+  }
+  .nav-links { display:flex; gap:1.5rem; align-items:center; }
+  .nav-links a { font-size:13px; color:var(--muted); text-decoration:none; transition:color .15s; }
+  .nav-links a:hover, .nav-links a.active { color:var(--rust); font-weight:500; }
+  .nav-pill {
+    background: var(--green); color: var(--gold);
+    padding: 8px 20px; border-radius: 100px;
+    font-size: 13px; font-weight: 500;
+    cursor:pointer; border:none;
+    font-family: 'DM Sans', sans-serif;
+    text-decoration: none;
+    transition: transform .15s, box-shadow .15s;
+  }
+  .nav-pill:hover { transform:translateY(-1px); box-shadow:0 4px 16px rgba(26,92,58,0.3); }
+
+  /* PAGE */
+  .page { max-width: 780px; margin: 0 auto; padding: 4rem 2rem 5rem; position:relative; z-index:1; }
+
+  .page-badge {
+    display: inline-flex; align-items:center; gap:6px;
+    background: var(--gold); color: var(--deep);
+    padding: 5px 14px; border-radius: 100px;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+  .page-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    font-weight: 800; line-height: 0.95;
+    letter-spacing: -0.03em; margin-bottom: 1.25rem;
+  }
+  .page-title em { font-style:italic; color: var(--rust); }
+
+  .meta-row {
+    display:flex; gap:1.5rem; flex-wrap:wrap;
+    font-size: 13px; color: var(--muted);
+    padding: 1rem 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 3rem;
+  }
+  .meta-row span strong { color: var(--text); font-weight:500; }
+
+  /* CONTENT */
+  .toc {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem 1.75rem;
+    margin-bottom: 3rem;
+  }
+  .toc-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--muted); margin-bottom: 1rem;
+  }
+  .toc ol { padding-left: 1.2rem; }
+  .toc li { margin-bottom: .4rem; }
+  .toc a { font-size: 14px; color: var(--rust); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+
+  .policy-section { margin-bottom: 3rem; }
+  .section-anchor { display:block; position:relative; top:-80px; }
+
+  h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.4rem; font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--text); margin-bottom: .9rem;
+    padding-bottom: .6rem;
+    border-bottom: 2px solid var(--gold);
+    display: inline-block;
+  }
+  h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem; font-weight: 700;
+    color: var(--text); margin: 1.25rem 0 .5rem;
+  }
+  p {
+    font-size: .975rem; line-height: 1.8;
+    color: var(--muted); margin-bottom: .85rem;
+  }
+  p strong { color: var(--text); font-weight: 500; }
+  a { color: var(--rust); }
+
+  ul, ol { padding-left: 1.4rem; margin-bottom: .85rem; }
+  li {
+    font-size: .975rem; line-height: 1.75;
+    color: var(--muted); margin-bottom: .3rem;
+  }
+  li strong { color: var(--text); font-weight:500; }
+
+  .highlight-box {
+    background: var(--warm);
+    border-left: 3px solid var(--gold);
+    border-radius: 0 12px 12px 0;
+    padding: 1rem 1.25rem;
+    margin: 1.25rem 0;
+    font-size: .95rem; line-height: 1.7;
+    color: var(--text);
+  }
+  .highlight-box strong { color: var(--rust); }
+
+  .info-card {
+    background: var(--deep);
+    border-radius: 16px; padding: 1.5rem;
+    margin: 1.5rem 0;
+    position: relative; overflow:hidden;
+  }
+  .info-card::before {
+    content:'';
+    position:absolute; top:-40px; right:-40px;
+    width:130px; height:130px;
+    background: radial-gradient(circle, rgba(245,200,66,0.15), transparent 70%);
+    pointer-events:none;
+  }
+  .info-card h3 { color: var(--gold); margin-top:0; }
+  .info-card p { color: #aaa; }
+  .info-card p strong { color: white; }
+  .info-card ul li { color:#aaa; }
+  .info-card ul li strong { color:white; }
+
+  .divider { height:1px; background:var(--border); margin:3rem 0; }
+
+  .contact-block {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.75rem;
+    margin-top: 2rem;
+  }
+  .contact-block h3 { margin-top:0; }
+  .contact-email {
+    display: inline-flex; align-items:center; gap:8px;
+    background: var(--green); color: var(--gold);
+    padding: 10px 20px; border-radius: 100px;
+    font-size: 14px; font-weight: 500;
+    text-decoration: none; margin-top: .75rem;
+    transition: transform .15s, box-shadow .15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .contact-email:hover { transform:translateY(-1px); box-shadow:0 4px 14px rgba(26,92,58,0.3); }
+
+  /* FOOTER */
+  .footer-strip {
+    background: var(--deep); color:#666;
+    padding:1.5rem 2rem;
+    display:flex; justify-content:space-between; align-items:center;
+    flex-wrap:wrap; gap:1rem; font-size:12px;
+    position:relative; z-index:1;
+  }
+  .footer-logo { font-family:'Syne',sans-serif; font-weight:800; font-size:1.1rem; color:white; text-decoration:none; }
+  .footer-logo span { color:var(--gold); }
+  .footer-links { display:flex; gap:1.5rem; }
+  .footer-links a { color:#666; text-decoration:none; }
+  .footer-links a:hover { color:var(--gold); }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">YAARD<span>.</span><span class="logo-sub">Caribbean PFP Generator</span></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="privacy.html" class="active">Privacy</a>
+    <a href="index.html" class="nav-pill">Make My PFP</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="page-badge">🔒 Legal</div>
+  <h1 class="page-title">Privacy<br><em>Policy.</em></h1>
+
+  <div class="meta-row">
+    <span><strong>Effective date:</strong> 1 June 2026</span>
+    <span><strong>Last updated:</strong> 30 May 2026</span>
+    <span><strong>Operator:</strong> YAARD (yaard.co)</span>
+  </div>
+
+  <!-- INTRO -->
+  <div class="highlight-box">
+    <strong>Plain English summary:</strong> YAARD is a free tool. We show ads (via Google AdSense) to keep it running. Photos you upload stay in your browser only — we never see them, store them, or transmit them. <strong>Your photo is permanently destroyed from browser memory the moment you download your styled PFP</strong> — not when you close the tab, but immediately on download. We collect basic analytics and ad-related data. You can opt out at any time.
+  </div>
+
+  <!-- TABLE OF CONTENTS -->
+  <div class="toc">
+    <div class="toc-title">Contents</div>
+    <ol>
+      <li><a href="#who-we-are">Who We Are</a></li>
+      <li><a href="#information-we-collect">Information We Collect</a></li>
+      <li><a href="#photos">Your Photos and Uploaded Content</a></li>
+      <li><a href="#how-we-use">How We Use Your Information</a></li>
+      <li><a href="#advertising">Advertising (Google AdSense)</a></li>
+      <li><a href="#cookies">Cookies and Tracking Technologies</a></li>
+      <li><a href="#third-parties">Third-Party Services</a></li>
+      <li><a href="#data-retention">Data Retention</a></li>
+      <li><a href="#your-rights">Your Rights</a></li>
+      <li><a href="#children">Children's Privacy</a></li>
+      <li><a href="#changes">Changes to This Policy</a></li>
+      <li><a href="#contact">Contact Us</a></li>
+    </ol>
+  </div>
+
+  <!-- 1. WHO WE ARE -->
+  <div class="policy-section">
+    <span class="section-anchor" id="who-we-are"></span>
+    <h2>1. Who We Are</h2>
+    <p>
+      YAARD ("we," "us," or "our") operates the website at <strong>yaard.co</strong> (the "Site"), a free Caribbean aesthetic profile picture generator. We are based in Jamaica.
+    </p>
+    <p>
+      This Privacy Policy explains how we collect, use, and protect information when you use our Site. By using YAARD, you agree to the practices described in this policy.
+    </p>
+    <p>
+      If you have any questions, please contact us at <a href="mailto:privacy@yaard.co">privacy@yaard.co</a>.
+    </p>
+  </div>
+
+  <!-- 2. INFORMATION WE COLLECT -->
+  <div class="policy-section">
+    <span class="section-anchor" id="information-we-collect"></span>
+    <h2>2. Information We Collect</h2>
+    <p>We collect two types of information: information you give us directly, and information collected automatically.</p>
+
+    <h3>Information collected automatically</h3>
+    <p>When you visit the Site, we (and our third-party partners) may automatically collect:</p>
+    <ul>
+      <li><strong>Log data:</strong> Your IP address, browser type, operating system, referring URLs, pages viewed, and time spent on pages.</li>
+      <li><strong>Device information:</strong> Device type, screen resolution, and language settings.</li>
+      <li><strong>Usage data:</strong> Which aesthetic styles you selected, whether you completed the generator flow, and general interaction patterns (no personally identifying information).</li>
+      <li><strong>Cookie data:</strong> See Section 6 (Cookies) for full details.</li>
+    </ul>
+
+    <h3>Information you provide voluntarily</h3>
+    <p>YAARD does not require you to create an account or provide personal information to use the generator. If you contact us by email, we will receive your email address and the content of your message.</p>
+  </div>
+
+  <!-- 3. PHOTOS -->
+  <div class="policy-section">
+    <span class="section-anchor" id="photos"></span>
+    <h2>3. Your Photos and Uploaded Content</h2>
+    <div class="info-card">
+      <h3>🖼️ Your photo is destroyed the moment you download.</h3>
+      <p>When you upload a photo to YAARD, it is processed <strong>entirely within your browser</strong> using client-side JavaScript. Your image is:</p>
+      <ul>
+        <li>Never transmitted to our servers at any point</li>
+        <li>Never stored in any database or cloud storage</li>
+        <li>Never shared with any third party</li>
+        <li>Never used to train AI models</li>
+        <li>Never written to <code style="background:rgba(255,255,255,0.1);padding:1px 5px;border-radius:4px;font-size:12px;">localStorage</code>, <code style="background:rgba(255,255,255,0.1);padding:1px 5px;border-radius:4px;font-size:12px;">sessionStorage</code>, or any browser cache</li>
+      </ul>
+      <p>The only data sent to our AI provider (Anthropic) is the <strong>text prompt</strong> describing your chosen aesthetic style. Your photo is never included in that request.</p>
+    </div>
+
+    <h3>What happens when you download your PFP</h3>
+    <p>
+      The moment you tap <strong>Download</strong>, YAARD immediately and automatically performs the following actions in sequence:
+    </p>
+    <ol style="margin-bottom:1rem;">
+      <li style="margin-bottom:.5rem;">Your styled PFP is saved to your device as a PNG file.</li>
+      <li style="margin-bottom:.5rem;">Both the original and styled image canvases are cleared pixel by pixel using <code style="background:var(--warm);padding:1px 5px;border-radius:4px;font-size:12px;color:var(--rust);">clearRect()</code>.</li>
+      <li style="margin-bottom:.5rem;">Canvas dimensions are reset to 1×1 pixels, making any residual data inaccessible.</li>
+      <li style="margin-bottom:.5rem;">The image object is nulled out and its source reference cleared from JavaScript memory.</li>
+      <li style="margin-bottom:.5rem;">The file input is reset, removing the filename reference.</li>
+    </ol>
+    <p>
+      A confirmation screen is then shown to you listing exactly what was destroyed. This all happens <strong>within 300 milliseconds of your download</strong> — not when you close the tab, but immediately and automatically.
+    </p>
+
+    <div class="highlight-box">
+      <strong>In plain terms:</strong> after you download your PFP, your original photo no longer exists anywhere in the YAARD session. There is nothing left to access, steal, or leak — because it has been actively wiped, not merely abandoned.
+    </div>
+  </div>
+
+  <!-- 4. HOW WE USE DATA -->
+  <div class="policy-section">
+    <span class="section-anchor" id="how-we-use"></span>
+    <h2>4. How We Use Your Information</h2>
+    <p>We use the information we collect to:</p>
+    <ul>
+      <li><strong>Operate and improve the Site</strong> — understanding which features are used helps us improve YAARD.</li>
+      <li><strong>Display relevant advertising</strong> — we use Google AdSense to show ads. See Section 5 for details.</li>
+      <li><strong>Analyse traffic</strong> — using anonymised analytics to understand how visitors use the Site.</li>
+      <li><strong>Respond to enquiries</strong> — if you contact us by email, we use your information to reply.</li>
+      <li><strong>Comply with legal obligations</strong> — we may process data where required by applicable law.</li>
+    </ul>
+    <p>We do <strong>not</strong> sell your personal information to third parties.</p>
+  </div>
+
+  <!-- 5. ADVERTISING -->
+  <div class="policy-section">
+    <span class="section-anchor" id="advertising"></span>
+    <h2>5. Advertising (Google AdSense)</h2>
+    <p>
+      YAARD is a free service supported by advertising. We use <strong>Google AdSense</strong> to display ads on the Site. Google AdSense uses cookies and similar tracking technologies to serve ads that are relevant to your interests based on your browsing history across websites.
+    </p>
+
+    <h3>What Google collects</h3>
+    <p>Google may collect and use data including:</p>
+    <ul>
+      <li>Your IP address and approximate location</li>
+      <li>Browser type and device information</li>
+      <li>Pages you visit across websites that use Google services</li>
+      <li>Interaction with ads (clicks, impressions)</li>
+    </ul>
+
+    <h3>How to opt out of personalised ads</h3>
+    <p>You can opt out of personalised advertising from Google by visiting <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener">google.com/settings/ads</a>. You can also use the <a href="https://optout.networkadvertising.org/" target="_blank" rel="noopener">NAI opt-out tool</a> to opt out from multiple ad networks at once.</p>
+
+    <div class="highlight-box">
+      Google's use of advertising cookies enables it and its partners to serve ads based on your visit to YAARD and other sites on the internet. You may opt out of the use of cookies for personalised advertising by visiting <strong>Ads Settings</strong> at <a href="https://www.google.com/settings/ads">google.com/settings/ads</a>.
+    </div>
+
+    <p>For more information about how Google uses data when you use our Site, please visit: <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener">policies.google.com/technologies/partner-sites</a>.</p>
+  </div>
+
+  <!-- 6. COOKIES -->
+  <div class="policy-section">
+    <span class="section-anchor" id="cookies"></span>
+    <h2>6. Cookies and Tracking Technologies</h2>
+    <p>YAARD uses cookies — small text files stored on your device — to operate and improve the Site and to enable advertising.</p>
+
+    <h3>Types of cookies we use</h3>
+    <ul>
+      <li>
+        <strong>Essential cookies:</strong> Necessary for the basic functionality of the Site. These cannot be disabled without affecting how the Site works.
+      </li>
+      <li>
+        <strong>Analytics cookies:</strong> We use anonymised analytics (such as Google Analytics) to understand how visitors use the Site. No personally identifying information is collected. Data is aggregated and anonymised before we see it.
+      </li>
+      <li>
+        <strong>Advertising cookies:</strong> Set by Google AdSense to deliver relevant ads and measure ad performance. See Section 5 for more details.
+      </li>
+    </ul>
+
+    <h3>Managing cookies</h3>
+    <p>
+      You can control and delete cookies through your browser settings. Note that disabling certain cookies may affect your experience on the Site. For instructions on managing cookies in your browser, visit <a href="https://www.allaboutcookies.org" target="_blank" rel="noopener">allaboutcookies.org</a>.
+    </p>
+  </div>
+
+  <!-- 7. THIRD PARTIES -->
+  <div class="policy-section">
+    <span class="section-anchor" id="third-parties"></span>
+    <h2>7. Third-Party Services</h2>
+    <p>YAARD uses the following third-party services. Each has its own privacy policy:</p>
+    <ul>
+      <li>
+        <strong>Google AdSense</strong> — advertising platform. <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Privacy Policy ↗</a>
+      </li>
+      <li>
+        <strong>Google Analytics</strong> — anonymised traffic analytics. <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Privacy Policy ↗</a>
+      </li>
+      <li>
+        <strong>Anthropic (Claude API)</strong> — AI-generated styling tips. Only text prompts (no images or personal data) are sent. <a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener">Privacy Policy ↗</a>
+      </li>
+      <li>
+        <strong>Google Fonts</strong> — web fonts loaded from Google servers. <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Privacy Policy ↗</a>
+      </li>
+    </ul>
+    <p>We are not responsible for the privacy practices of these third-party services. We encourage you to review their policies.</p>
+  </div>
+
+  <!-- 8. DATA RETENTION -->
+  <div class="policy-section">
+    <span class="section-anchor" id="data-retention"></span>
+    <h2>8. Data Retention</h2>
+    <p>
+      We retain anonymised analytics data for up to <strong>26 months</strong>, after which it is automatically deleted by our analytics provider. We do not retain any personally identifying information beyond what is necessary to respond to enquiries.
+    </p>
+    <p>
+      Uploaded photos are never stored on our servers at any point. They exist in your browser's memory only during the active generation session, and are <strong>permanently destroyed from browser memory immediately upon download</strong> — well before you close the tab. See Section 3 for the full technical detail of how destruction works.
+    </p>
+    <p>
+      If you contact us by email, we retain your correspondence for up to <strong>2 years</strong> for record-keeping purposes, unless you request earlier deletion.
+    </p>
+  </div>
+
+  <!-- 9. YOUR RIGHTS -->
+  <div class="policy-section">
+    <span class="section-anchor" id="your-rights"></span>
+    <h2>9. Your Rights</h2>
+    <p>Depending on your location, you may have the following rights regarding your personal data:</p>
+    <ul>
+      <li><strong>Access:</strong> Request a copy of the personal data we hold about you.</li>
+      <li><strong>Correction:</strong> Request correction of any inaccurate personal data.</li>
+      <li><strong>Deletion:</strong> Request deletion of your personal data ("right to be forgotten").</li>
+      <li><strong>Objection:</strong> Object to certain types of data processing, including direct marketing.</li>
+      <li><strong>Portability:</strong> Request a copy of your data in a machine-readable format.</li>
+      <li><strong>Withdraw consent:</strong> Where we process data based on your consent, you may withdraw that consent at any time.</li>
+    </ul>
+    <p>
+      To exercise any of these rights, please contact us at <a href="mailto:privacy@yaard.co">privacy@yaard.co</a>. We will respond within 30 days.
+    </p>
+    <p>
+      If you are located in the European Economic Area, you have the right to lodge a complaint with your local data protection authority. If you are located in the United Kingdom, you may contact the Information Commissioner's Office (ICO) at <a href="https://ico.org.uk" target="_blank" rel="noopener">ico.org.uk</a>.
+    </p>
+  </div>
+
+  <!-- 10. CHILDREN -->
+  <div class="policy-section">
+    <span class="section-anchor" id="children"></span>
+    <h2>10. Children's Privacy</h2>
+    <p>
+      YAARD is designed for users aged <strong>18 and over</strong>. We do not knowingly collect personal information from children under the age of 13. If you believe a child under 13 has provided us with personal information, please contact us at <a href="mailto:privacy@yaard.co">privacy@yaard.co</a> and we will take steps to delete that information promptly.
+    </p>
+    <p>
+      If you are between 13 and 17, please ensure you have parental or guardian consent before using YAARD.
+    </p>
+  </div>
+
+  <!-- 11. CHANGES -->
+  <div class="policy-section">
+    <span class="section-anchor" id="changes"></span>
+    <h2>11. Changes to This Policy</h2>
+    <p>
+      We may update this Privacy Policy from time to time to reflect changes in our practices or applicable law. When we make material changes, we will update the "Last updated" date at the top of this page.
+    </p>
+    <p>
+      We encourage you to review this policy periodically. Your continued use of YAARD after any changes constitutes your acceptance of the updated policy.
+    </p>
+  </div>
+
+  <!-- 12. CONTACT -->
+  <div class="policy-section">
+    <span class="section-anchor" id="contact"></span>
+    <h2>12. Contact Us</h2>
+    <div class="contact-block">
+      <h3>Questions about your privacy?</h3>
+      <p style="margin-bottom:.5rem;">
+        If you have any questions, concerns, or requests regarding this Privacy Policy or how we handle your data, please reach out to us. We aim to respond within <strong>30 days</strong>.
+      </p>
+      <p style="margin-bottom:.75rem;font-size:13px;">
+        <strong>YAARD</strong><br>
+        Kingston, Jamaica<br>
+        <a href="mailto:privacy@yaard.co">privacy@yaard.co</a>
+      </p>
+      <a href="mailto:privacy@yaard.co" class="contact-email">✉️ privacy@yaard.co</a>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer-strip">
+  <a href="index.html" class="footer-logo">YAARD<span>.</span></a>
+  <div class="footer-links">
+    <a href="about.html">About</a>
+    <a href="privacy.html">Privacy Policy</a>
+    <a href="mailto:hello@yaard.co">Contact</a>
+  </div>
+  <div>© 2026 YAARD — Caribbean PFP Generator</div>
+</div>
+
+</body>
+</html>
