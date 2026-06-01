@@ -41,7 +41,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 /* ── MAIN SITE ── */
 #mainSite{opacity:0;transition:opacity .5s ease .1s;}
 #mainSite.visible{opacity:1;}
-nav{display:flex;align-items:center;justify-content:space-between;padding:1.25rem 2rem;border-bottom:1px solid var(--border);background:rgba(253,246,227,.9);backdrop-filter:blur(12px);position:sticky;top:0;z-index:1000;}
+nav{display:flex;align-items:center;justify-content:space-between;padding:1.25rem 2rem;border-bottom:1px solid var(--border);background:rgba(253,246,227,.9);backdrop-filter:blur(12px);position:sticky;top:0;z-index:100;}
 .logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;letter-spacing:-.03em;color:var(--deep);text-decoration:none;}
 .logo span{color:var(--gold);}
 .logo-sub{font-size:10px;font-weight:400;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;display:block;margin-top:-3px;}
@@ -222,7 +222,6 @@ input[type=file]{display:none;}
 <nav>
   <a href="index.html" class="logo">YAARD<span>.</span><span class="logo-sub">Caribbean PFP Generator</span></a>
   <div class="nav-links">
-    <a href="index.html">Home</a>
     <a href="about.html">About</a>
     <a href="privacy.html">Privacy</a>
     <a href="#generator" class="nav-pill">Make My PFP</a>
@@ -346,7 +345,7 @@ input[type=file]{display:none;}
   <div class="footer-links">
     <a href="about.html">About</a>
     <a href="privacy.html">Privacy Policy</a>
-    <a href="mailto:admin@yaardja.com">Contact</a>
+    <a href="mailto:hello@yaard.co">Contact</a>
   </div>
   <div>© 2026 YAARD — Caribbean PFP Generator · Ages 18+</div>
 </div>
