@@ -222,6 +222,7 @@ input[type=file]{display:none;}
 <nav>
   <a href="index.html" class="logo">YAARD<span>.</span><span class="logo-sub">Caribbean PFP Generator</span></a>
   <div class="nav-links">
+    <a href="index.html">Home</a>
     <a href="about.html">About</a>
     <a href="privacy.html">Privacy</a>
     <a href="#generator" class="nav-pill">Make My PFP</a>
@@ -281,8 +282,14 @@ input[type=file]{display:none;}
         <button class="shape-btn" id="shPo" onclick="setShape('portrait')">▯ Portrait</button>
       </div>
 
-      <p style="font-size:11px;color:#888;margin-bottom:8px;font-family:'Syne',sans-serif;text-transform:uppercase;letter-spacing:.12em;">Filter variant</p>
+      <p style="font-size:11px;color:#888;margin-bottom:8px;font-family:'Syne',sans-serif;text-transform:uppercase;letter-spacing:.12em;">Filter</p>
       <div class="filter-row" id="filterRow"></div>
+
+      <p style="font-size:11px;color:#888;margin-bottom:8px;margin-top:10px;font-family:'Syne',sans-serif;text-transform:uppercase;letter-spacing:.12em;">Border Frame</p>
+      <div class="filter-row" id="borderRow"></div>
+
+      <p style="font-size:11px;color:#888;margin-bottom:8px;margin-top:10px;font-family:'Syne',sans-serif;text-transform:uppercase;letter-spacing:.12em;">Overlay (40%)</p>
+      <div class="filter-row" id="overlayRow"></div>
 
       <div class="int-row">
         <label>Intensity</label>
@@ -345,7 +352,7 @@ input[type=file]{display:none;}
   <div class="footer-links">
     <a href="about.html">About</a>
     <a href="privacy.html">Privacy Policy</a>
-    <a href="mailto:hello@yaard.co">Contact</a>
+    <a href="mailto:admin@yaardja.com">Contact</a>
   </div>
   <div>© 2026 YAARD — Caribbean PFP Generator · Ages 18+</div>
 </div>
@@ -369,101 +376,130 @@ function exitSite(){ window.location.href='https://www.google.com'; }
   } else { document.body.style.overflow='hidden'; }
 })();
 
-/* ── DATA ── */
+/* ── BORDER FRAMES ── */
+const BORDERS=[
+  {id:'none', name:'No Frame', draw:()=>{}},
+  {id:'jamaica', name:'🇯🇲 Jamaica', draw:(ctx,w,h)=>{
+    const t=Math.round(w*0.045);
+    const colors=['#000000','#FED100','#009B3A'];
+    colors.forEach((c,i)=>{ctx.fillStyle=c;ctx.fillRect(i*(t/1),0,t/1,h);ctx.fillRect(w-(i+1)*(t/1),0,t/1,h);ctx.fillRect(0,i*(t/1),w,t/1);ctx.fillRect(0,h-(i+1)*(t/1),w,t/1);});
+    // X cross in gold
+    ctx.strokeStyle='#FED100'; ctx.lineWidth=t*0.8;
+    ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(w,h); ctx.moveTo(w,0); ctx.lineTo(0,h); ctx.stroke();
+  }},
+  {id:'panafri', name:'🌈 Pan-African', draw:(ctx,w,h)=>{
+    const t=Math.round(w*0.038);
+    [['#CC0000',0],['#FFCC00',1],['#009900',2],['#000000',3]].forEach(([c,i])=>{
+      ctx.fillStyle=c;
+      ctx.fillRect(0,i*t,w,t); ctx.fillRect(0,h-(i+1)*t,w,t);
+      ctx.fillRect(i*t,0,t,h); ctx.fillRect(w-(i+1)*t,0,t,h);
+    });
+  }},
+  {id:'trinidad', name:'🇹🇹 Trinidad', draw:(ctx,w,h)=>{
+    const t=Math.round(w*0.04);
+    [['#CE1126',0],['#000000',1],['#FFFFFF',2]].forEach(([c,i])=>{
+      ctx.fillStyle=c;
+      ctx.fillRect(0,i*t,w,t); ctx.fillRect(0,h-(i+1)*t,w,t);
+      ctx.fillRect(i*t,0,t,h); ctx.fillRect(w-(i+1)*t,0,t,h);
+    });
+  }},
+  {id:'barbados', name:'🇧🇧 Barbados', draw:(ctx,w,h)=>{
+    const t=Math.round(w*0.04);
+    [['#00267F',0],['#FFC726',1],['#000000',2]].forEach(([c,i])=>{
+      ctx.fillStyle=c;
+      ctx.fillRect(0,i*t,w,t); ctx.fillRect(0,h-(i+1)*t,w,t);
+      ctx.fillRect(i*t,0,t,h); ctx.fillRect(w-(i+1)*t,0,t,h);
+    });
+  }},
+  {id:'tropical', name:'🌴 Tropical', draw:(ctx,w,h)=>{
+    const t=Math.round(w*0.055);
+    const grad=ctx.createLinearGradient(0,0,w,h);
+    grad.addColorStop(0,'#1A5C3A'); grad.addColorStop(0.4,'#F5C842');
+    grad.addColorStop(0.7,'#4FC3F7'); grad.addColorStop(1,'#1A5C3A');
+    ctx.fillStyle=grad;
+    ctx.fillRect(0,0,w,t); ctx.fillRect(0,h-t,w,t);
+    ctx.fillRect(0,0,t,h); ctx.fillRect(w-t,0,t,h);
+  }}
+];
+
+/* ── OVERLAYS ── */
+const OVERLAYS=[
+  {id:'none', name:'None', draw:()=>{}},
+  {id:'haze', name:'🌅 Warm Haze', draw:(ctx,w,h)=>{
+    ctx.fillStyle='rgba(245,180,60,0.40)'; ctx.fillRect(0,0,w,h);
+  }},
+  {id:'green', name:'🌿 Green Tint', draw:(ctx,w,h)=>{
+    ctx.fillStyle='rgba(26,92,58,0.40)'; ctx.fillRect(0,0,w,h);
+  }},
+  {id:'shimmer', name:'💫 Shimmer', draw:(ctx,w,h)=>{
+    const id=ctx.getImageData(0,0,w,h);
+    for(let i=0;i<id.data.length;i+=4){
+      const n=(Math.random()-0.5)*30;
+      id.data[i]=Math.min(255,Math.max(0,id.data[i]+n));
+      id.data[i+1]=Math.min(255,Math.max(0,id.data[i+1]+n));
+      id.data[i+2]=Math.min(255,Math.max(0,id.data[i+2]+n));
+    }
+    ctx.putImageData(id,0,0);
+  }},
+  {id:'vignette', name:'🌑 Vignette', draw:(ctx,w,h)=>{
+    const rad=ctx.createRadialGradient(w/2,h/2,h*0.3,w/2,h/2,h*0.85);
+    rad.addColorStop(0,'rgba(0,0,0,0)');
+    rad.addColorStop(1,'rgba(0,0,0,0.65)');
+    ctx.fillStyle=rad; ctx.fillRect(0,0,w,h);
+  }}
+];
+
+/* ── STYLES (4 aesthetics, 2 filters each) ── */
 const STYLES=[
-  {id:'melanin',name:'Melanin Glow',vibe:'Warm tones · Rich skin · Confident',
-   grad:'linear-gradient(135deg,#C97B3A,#6B2D0F)',
-   filters:[
-     {name:'Warm Gold',fn:(d,a)=>grade(d,a,{r:1.18,g:1.05,b:0.72,br:12,co:1.15,sat:1.25,warm:20})},
-     {name:'Amber Rich',fn:(d,a)=>grade(d,a,{r:1.22,g:1.0,b:0.65,br:8,co:1.2,sat:1.3,warm:28})},
-     {name:'Sunset Skin',fn:(d,a)=>grade(d,a,{r:1.15,g:0.98,b:0.75,br:15,co:1.1,sat:1.2,warm:15})}
-   ],
-   kw:['melanin glow pfp','dark skin aesthetic','brown skin girl portrait','warm tone pfp 2026'],
-   prompt:'5 short tips for a Melanin Glow PFP: lighting, background, outfit, pose, edit filter. Caribbean 18-35. Numbered list, 1-2 sentences each.'
-  },
-  {id:'golden',name:'Golden Hour',vibe:'Sunset · Tropical glow · Outdoors',
-   grad:'linear-gradient(135deg,#F5C842,#E8722A)',
-   filters:[
-     {name:'Dusk Haze',fn:(d,a)=>grade(d,a,{r:1.25,g:1.1,b:0.6,br:20,co:1.1,sat:1.2,warm:30})},
-     {name:'Bronze Light',fn:(d,a)=>grade(d,a,{r:1.3,g:1.05,b:0.55,br:15,co:1.15,sat:1.25,warm:35})},
-     {name:'Soft Glow',fn:(d,a)=>grade(d,a,{r:1.2,g:1.15,b:0.8,br:25,co:1.05,sat:1.1,warm:20})}
-   ],
-   kw:['golden hour portrait pfp','sunset aesthetic profile','caribbean golden hour','tropical glow pfp'],
-   prompt:'5 short tips for a Golden Hour PFP: best time, Jamaica outdoor location, pose, outfit colours, edit preset. Numbered list, 1-2 sentences each.'
-  },
-  {id:'y2k',name:'Y2K Vibes',vibe:'2000s energy · Flip phone · Retro digital',
-   grad:'linear-gradient(135deg,#FF6EC7,#7B4FFF)',
-   filters:[
-     {name:'Faded Film',fn:(d,a)=>grade(d,a,{r:1.05,g:0.95,b:1.25,br:18,co:0.9,sat:1.15,fade:25})},
-     {name:'Lo-Fi Pink',fn:(d,a)=>grade(d,a,{r:1.2,g:0.9,b:1.2,br:22,co:0.85,sat:1.2,fade:20})},
-     {name:'Blue Tint',fn:(d,a)=>grade(d,a,{r:0.85,g:0.95,b:1.3,br:15,co:0.9,sat:1.1,fade:15})}
-   ],
-   kw:['y2k pfp black girl','y2k aesthetic profile','2000s pfp aesthetic','lo-fi y2k portrait'],
-   prompt:'5 short tips for a Y2K aesthetic PFP: outfit, accessories, lo-fi filter, background, camera style. Caribbean 18-25. Numbered list, 1-2 sentences each.'
-  },
   {id:'vamp',name:'Vamp Romantic',vibe:'Dark glamour · Moody · Editorial',
    grad:'linear-gradient(135deg,#3D0C11,#C0392B)',
    filters:[
      {name:'Dark Crimson',fn:(d,a)=>grade(d,a,{r:1.15,g:0.75,b:0.75,br:-18,co:1.3,sat:0.9,shadow:20})},
-     {name:'Moody Wine',fn:(d,a)=>grade(d,a,{r:1.1,g:0.7,b:0.8,br:-22,co:1.35,sat:0.85,shadow:25})},
-     {name:'Cinematic',fn:(d,a)=>grade(d,a,{r:1.0,g:0.8,b:0.85,br:-15,co:1.25,sat:0.8,shadow:15})}
+     {name:'Moody Wine',fn:(d,a)=>grade(d,a,{r:1.1,g:0.7,b:0.8,br:-22,co:1.35,sat:0.85,shadow:25})}
    ],
    kw:['vamp romantic pfp','dark glamour aesthetic','moody editorial pfp','dark romantic portrait'],
    prompt:'5 short tips for a Vamp Romantic dark editorial PFP: makeup, lighting, outfit, location, edit style. Caribbean 20-35. Numbered list, 1-2 sentences each.'
-  },
-  {id:'poetcore',name:'Poetcore',vibe:'Academia · Intellectual · Golden indoors',
-   grad:'linear-gradient(135deg,#B5934A,#5C3D1E)',
-   filters:[
-     {name:'Amber Tone',fn:(d,a)=>grade(d,a,{r:1.15,g:1.05,b:0.7,br:5,co:1.2,sat:0.85,warm:15})},
-     {name:'Old Film',fn:(d,a)=>grade(d,a,{r:1.1,g:1.0,b:0.75,br:3,co:1.15,sat:0.75,fade:18})},
-     {name:'Warm Sepia',fn:(d,a)=>grade(d,a,{r:1.2,g:1.0,b:0.65,br:0,co:1.1,sat:0.7,warm:20})}
-   ],
-   kw:['poetcore pfp melanin','dark academia portrait','poet aesthetic pfp','bookish profile picture'],
-   prompt:'5 short tips for a Poetcore PFP: wardrobe, props, indoor lighting, location, edit tones. Caribbean 18-30. Numbered list, 1-2 sentences each.'
   },
   {id:'coolblue',name:'Cool Blue',vibe:'Icy · Serene · Ocean-coded',
    grad:'linear-gradient(135deg,#4FC3F7,#1565C0)',
    filters:[
      {name:'Arctic',fn:(d,a)=>grade(d,a,{r:0.8,g:1.0,b:1.35,br:15,co:1.15,sat:1.1,cool:20})},
-     {name:'Cyan Pop',fn:(d,a)=>grade(d,a,{r:0.75,g:1.05,b:1.3,br:20,co:1.1,sat:1.2,cool:25})},
      {name:'Deep Water',fn:(d,a)=>grade(d,a,{r:0.7,g:0.9,b:1.35,br:10,co:1.2,sat:1.0,cool:15})}
    ],
    kw:['cool blue aesthetic pfp','icy portrait caribbean','ocean aesthetic profile','blue pfp aesthetic'],
    prompt:'5 short tips for a Cool Blue PFP: clothing colours, cool-tone lighting, Kingston ocean locations, pose, VSCO filter. Numbered list, 1-2 sentences each.'
   },
-  {id:'dancehall',name:'Dancehall Street',vibe:'Bold · Energy · Kingston vibes',
-   grad:'linear-gradient(135deg,#1A5C3A,#F5C842)',
-   filters:[
-     {name:'Vivid JA',fn:(d,a)=>grade(d,a,{r:1.1,g:1.15,b:0.7,br:18,co:1.2,sat:1.5,warm:10})},
-     {name:'Neon Pop',fn:(d,a)=>grade(d,a,{r:1.0,g:1.2,b:0.6,br:22,co:1.15,sat:1.6,warm:5})},
-     {name:'Street Bold',fn:(d,a)=>grade(d,a,{r:1.05,g:1.1,b:0.75,br:15,co:1.25,sat:1.4,warm:8})}
-   ],
-   kw:['dancehall aesthetic pfp','kingston street style pfp','caribbean streetwear portrait','jamaican style pfp'],
-   prompt:'5 short tips for a Dancehall Street PFP: outfit/sneakers, Kingston locations, bold poses, colour choices, phone editing. Numbered list, 1-2 sentences each.'
-  },
-  {id:'softglow',name:'Soft Glow',vibe:'Pastel · Dewy skin · Jelly vibes',
+  {id:'softglow',name:'Soft Glow',vibe:'Pastel · Dewy skin · Island Blush',
    grad:'linear-gradient(135deg,#FADADD,#E07B9A)',
    filters:[
      {name:'Jelly Pink',fn:(d,a)=>grade(d,a,{r:1.15,g:0.95,b:1.05,br:25,co:0.9,sat:1.15,fade:15})},
-     {name:'Peach Dream',fn:(d,a)=>grade(d,a,{r:1.2,g:1.05,b:0.95,br:28,co:0.88,sat:1.1,fade:18})},
-     {name:'Lavender',fn:(d,a)=>grade(d,a,{r:1.05,g:0.9,b:1.15,br:30,co:0.85,sat:1.05,fade:20})}
+     {name:'Peach Dream',fn:(d,a)=>grade(d,a,{r:1.2,g:1.05,b:0.95,br:28,co:0.88,sat:1.1,fade:18})}
    ],
-   kw:['soft glow pfp','dewy skin aesthetic pfp','pastel pfp caribbean','jelly blush aesthetic portrait'],
+   kw:['soft glow pfp','dewy skin aesthetic pfp','pastel pfp caribbean','island blush portrait'],
    prompt:'5 short tips for a Soft Glow pastel PFP: dewy makeup, ring-light, pastel outfit, soft background, VSCO filter. Caribbean women 18-28. Numbered list, 1-2 sentences each.'
+  },
+  {id:'y2k',name:'Y2K Vibes',vibe:'2000s energy · Flip phone · Retro digital',
+   grad:'linear-gradient(135deg,#FF6EC7,#7B4FFF)',
+   filters:[
+     {name:'Faded Film',fn:(d,a)=>grade(d,a,{r:1.05,g:0.95,b:1.25,br:18,co:0.9,sat:1.15,fade:25})},
+     {name:'Lo-Fi Pink',fn:(d,a)=>grade(d,a,{r:1.2,g:0.9,b:1.2,br:22,co:0.85,sat:1.2,fade:20})}
+   ],
+   kw:['y2k pfp black girl','y2k aesthetic profile','2000s pfp aesthetic','lo-fi y2k portrait'],
+   prompt:'5 short tips for a Y2K aesthetic PFP: outfit, accessories, lo-fi filter, background, camera style. Caribbean 18-25. Numbered list, 1-2 sentences each.'
   }
 ];
 
 const GALLERY=[
-  {label:'🖤 Melanin Glow',bg:'linear-gradient(160deg,#D4844A,#7A3310 60%,#3D1A08)'},
-  {label:'🌅 Golden Hour',bg:'linear-gradient(160deg,#FFD166,#EF8C4A 50%,#C0392B)'},
-  {label:'💜 Y2K Vibes',bg:'linear-gradient(160deg,#FF6FD8,#9B5DE5 50%,#00BBF9)'},
   {label:'🩸 Vamp Romantic',bg:'linear-gradient(160deg,#2D0A12,#7B1325 60%,#B03040)'},
-  {label:'📖 Poetcore',bg:'linear-gradient(160deg,#C9A96E,#7A5230 60%,#3E2A18)'},
   {label:'🌊 Cool Blue',bg:'linear-gradient(160deg,#81D4FA,#1976D2 60%,#0D47A1)'},
+  {label:'🌸 Soft Glow',bg:'linear-gradient(160deg,#FFD6E0,#FFACC7 50%,#FF85A1)'},
+  {label:'💜 Y2K Vibes',bg:'linear-gradient(160deg,#FF6FD8,#9B5DE5 50%,#00BBF9)'},
+  {label:'🇯🇲 Jamaica Frame',bg:'linear-gradient(160deg,#000000,#FED100 50%,#009B3A)'},
+  {label:'🌴 Tropical Frame',bg:'linear-gradient(160deg,#1A5C3A,#F5C842 50%,#4FC3F7)'},
 ];
 
 /* ── STATE ── */
-let selStyle=null,selFilter=0,shape='square',intensity=80,origImg=null,styled=false;
+let selStyle=null,selFilter=0,selBorder=0,selOverlay=0,shape='square',intensity=80,origImg=null,styled=false;
 
 /* ── CANVAS GRADING ── */
 function grade(data,alpha,cfg){
@@ -522,21 +558,19 @@ function resetAll(){
   document.getElementById('editSection').style.display='none';
   document.getElementById('resultArea').classList.remove('show');
   ['s0','s1','s2','s3'].forEach((id,i)=>{
-    const el=document.getElementById(id);
-    el.className='step'+(i===0?' active':'');
+    document.getElementById(id).className='step'+(i===0?' active':'');
   });
   document.querySelectorAll('.style-card').forEach(c=>c.classList.remove('active'));
-  selStyle=null;selFilter=0;shape='square';intensity=80;origImg=null;styled=false;
+  selStyle=null;selFilter=0;selBorder=0;selOverlay=0;shape='square';intensity=80;origImg=null;styled=false;
   document.getElementById('intSlider').value=80;
   document.getElementById('intVal').textContent='80%';
   ['shSq','shCi','shPo'].forEach((id,i)=>document.getElementById(id).classList.toggle('active',i===0));
+  buildBorderRow(); buildOverlayRow();
 }
 
-/* ── STEP TRACKER ── */
 function setStep(n,state){
   const ids=['s0','s1','s2','s3'];
-  const el=document.getElementById(ids[n]);
-  el.className='step '+state;
+  document.getElementById(ids[n]).className='step '+state;
 }
 
 /* ── BUILD GRIDS ── */
@@ -580,6 +614,30 @@ function buildFilterRow(){
   });
 }
 
+/* ── BORDER ROW ── */
+function buildBorderRow(){
+  const br=document.getElementById('borderRow'); br.innerHTML='';
+  BORDERS.forEach((b,i)=>{
+    const btn=document.createElement('button');
+    btn.className='filter-btn'+(i===selBorder?' active':'');
+    btn.textContent=b.name;
+    btn.onclick=()=>{selBorder=i;buildBorderRow();if(origImg)applyFilter();};
+    br.appendChild(btn);
+  });
+}
+
+/* ── OVERLAY ROW ── */
+function buildOverlayRow(){
+  const or=document.getElementById('overlayRow'); or.innerHTML='';
+  OVERLAYS.forEach((o,i)=>{
+    const btn=document.createElement('button');
+    btn.className='filter-btn'+(i===selOverlay?' active':'');
+    btn.textContent=o.name;
+    btn.onclick=()=>{selOverlay=i;buildOverlayRow();if(origImg)applyFilter();};
+    or.appendChild(btn);
+  });
+}
+
 /* ── SHAPE ── */
 function setShape(sh){
   shape=sh;
@@ -617,13 +675,22 @@ function applyFilter(){
   const cv=document.getElementById('cvOut');
   drawToCanvas(cv,origImg);
   const ctx=cv.getContext('2d');
+  // Apply colour grade filter
   const id=ctx.getImageData(0,0,cv.width,cv.height);
   selStyle.filters[selFilter].fn(id,intensity);
   ctx.putImageData(id,0,0);
+  // Apply overlay
+  OVERLAYS[selOverlay].draw(ctx,cv.width,cv.height);
+  // Apply border frame
+  BORDERS[selBorder].draw(ctx,cv.width,cv.height);
   styled=true;
   document.getElementById('dlBtn').disabled=false;
   setStep(2,'done'); setStep(3,'active');
 }
+
+// Initialise rows
+buildBorderRow();
+buildOverlayRow();
 
 /* ── FILE UPLOAD ── */
 document.getElementById('fi').addEventListener('change',function(e){
@@ -656,7 +723,6 @@ async function fetchTips(){
   const kc=document.getElementById('kwTags'); kc.innerHTML='';
   selStyle.kw.forEach(k=>{const t=document.createElement('span');t.className='kw-tag';t.textContent='#'+k.replace(/ /g,'');kc.appendChild(t);});
   try{
-    // Calls the secure Netlify serverless proxy — API key stays server-side only
     const res=await fetch('/.netlify/functions/claude-proxy',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
