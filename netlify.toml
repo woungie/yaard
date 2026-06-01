@@ -2,8 +2,8 @@
   from = "/"
   to = "/index.html"
   status = 200
-  
- [build]
+
+[build]
   functions = "netlify/functions"
 
 [functions]
