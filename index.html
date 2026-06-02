@@ -376,40 +376,45 @@ function exitSite(){ window.location.href='https://www.google.com'; }
   } else { document.body.style.overflow='hidden'; }
 })();
 
-/* ── BORDER FRAMES ── */
+/* ── BORDER FRAMES (all gradient style) ── */
 const BORDERS=[
   {id:'none', name:'No Frame', draw:()=>{}},
   {id:'jamaica', name:'🇯🇲 Jamaica', draw:(ctx,w,h)=>{
-    const t=Math.round(w*0.045);
-    const colors=['#000000','#FED100','#009B3A'];
-    colors.forEach((c,i)=>{ctx.fillStyle=c;ctx.fillRect(i*(t/1),0,t/1,h);ctx.fillRect(w-(i+1)*(t/1),0,t/1,h);ctx.fillRect(0,i*(t/1),w,t/1);ctx.fillRect(0,h-(i+1)*(t/1),w,t/1);});
-    // X cross in gold
-    ctx.strokeStyle='#FED100'; ctx.lineWidth=t*0.8;
-    ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(w,h); ctx.moveTo(w,0); ctx.lineTo(0,h); ctx.stroke();
-  }},
-  {id:'panafri', name:'🌈 Pan-African', draw:(ctx,w,h)=>{
-    const t=Math.round(w*0.038);
-    [['#CC0000',0],['#FFCC00',1],['#009900',2],['#000000',3]].forEach(([c,i])=>{
-      ctx.fillStyle=c;
-      ctx.fillRect(0,i*t,w,t); ctx.fillRect(0,h-(i+1)*t,w,t);
-      ctx.fillRect(i*t,0,t,h); ctx.fillRect(w-(i+1)*t,0,t,h);
-    });
+    const t=Math.round(w*0.055);
+    const grad=ctx.createLinearGradient(0,0,w,h);
+    grad.addColorStop(0,'#000000'); grad.addColorStop(0.4,'#009B3A');
+    grad.addColorStop(0.7,'#FED100'); grad.addColorStop(1,'#000000');
+    ctx.fillStyle=grad;
+    ctx.fillRect(0,0,w,t); ctx.fillRect(0,h-t,w,t);
+    ctx.fillRect(0,0,t,h); ctx.fillRect(w-t,0,t,h);
   }},
   {id:'trinidad', name:'🇹🇹 Trinidad', draw:(ctx,w,h)=>{
-    const t=Math.round(w*0.04);
-    [['#CE1126',0],['#000000',1],['#FFFFFF',2]].forEach(([c,i])=>{
-      ctx.fillStyle=c;
-      ctx.fillRect(0,i*t,w,t); ctx.fillRect(0,h-(i+1)*t,w,t);
-      ctx.fillRect(i*t,0,t,h); ctx.fillRect(w-(i+1)*t,0,t,h);
-    });
+    const t=Math.round(w*0.055);
+    const grad=ctx.createLinearGradient(0,0,w,h);
+    grad.addColorStop(0,'#CE1126'); grad.addColorStop(0.5,'#FFFFFF');
+    grad.addColorStop(1,'#CE1126');
+    ctx.fillStyle=grad;
+    ctx.fillRect(0,0,w,t); ctx.fillRect(0,h-t,w,t);
+    ctx.fillRect(0,0,t,h); ctx.fillRect(w-t,0,t,h);
   }},
   {id:'barbados', name:'🇧🇧 Barbados', draw:(ctx,w,h)=>{
-    const t=Math.round(w*0.04);
-    [['#00267F',0],['#FFC726',1],['#000000',2]].forEach(([c,i])=>{
-      ctx.fillStyle=c;
-      ctx.fillRect(0,i*t,w,t); ctx.fillRect(0,h-(i+1)*t,w,t);
-      ctx.fillRect(i*t,0,t,h); ctx.fillRect(w-(i+1)*t,0,t,h);
-    });
+    const t=Math.round(w*0.055);
+    const grad=ctx.createLinearGradient(0,0,w,h);
+    grad.addColorStop(0,'#00338D'); grad.addColorStop(0.4,'#F5C518');
+    grad.addColorStop(0.7,'#000000'); grad.addColorStop(1,'#00338D');
+    ctx.fillStyle=grad;
+    ctx.fillRect(0,0,w,t); ctx.fillRect(0,h-t,w,t);
+    ctx.fillRect(0,0,t,h); ctx.fillRect(w-t,0,t,h);
+  }},
+  {id:'panafri', name:'🌈 Pan-African', draw:(ctx,w,h)=>{
+    const t=Math.round(w*0.055);
+    const grad=ctx.createLinearGradient(0,0,w,h);
+    grad.addColorStop(0,'#CC0000'); grad.addColorStop(0.25,'#FF0000');
+    grad.addColorStop(0.5,'#009900'); grad.addColorStop(0.75,'#FFCC00');
+    grad.addColorStop(1,'#CC0000');
+    ctx.fillStyle=grad;
+    ctx.fillRect(0,0,w,t); ctx.fillRect(0,h-t,w,t);
+    ctx.fillRect(0,0,t,h); ctx.fillRect(w-t,0,t,h);
   }},
   {id:'tropical', name:'🌴 Tropical', draw:(ctx,w,h)=>{
     const t=Math.round(w*0.055);
@@ -682,7 +687,36 @@ function applyFilter(){
   // Apply overlay
   OVERLAYS[selOverlay].draw(ctx,cv.width,cv.height);
   // Apply border frame
-  BORDERS[selBorder].draw(ctx,cv.width,cv.height);
+  if(selBorder>0){
+    if(shape==='circle'){
+      // For circle: draw border as a thick ring stroke around the circle edge
+      const t=Math.round(cv.width*0.055);
+      const r=cv.width/2;
+      // Build gradient for stroke
+      const grad=ctx.createLinearGradient(0,0,cv.width,cv.height);
+      const b=BORDERS[selBorder];
+      if(b.id==='jamaica'){
+        grad.addColorStop(0,'#000000');grad.addColorStop(0.4,'#009B3A');grad.addColorStop(0.7,'#FED100');grad.addColorStop(1,'#000000');
+      } else if(b.id==='trinidad'){
+        grad.addColorStop(0,'#CE1126');grad.addColorStop(0.5,'#FFFFFF');grad.addColorStop(1,'#CE1126');
+      } else if(b.id==='barbados'){
+        grad.addColorStop(0,'#00338D');grad.addColorStop(0.4,'#F5C518');grad.addColorStop(0.7,'#000000');grad.addColorStop(1,'#00338D');
+      } else if(b.id==='panafri'){
+        grad.addColorStop(0,'#CC0000');grad.addColorStop(0.25,'#FF0000');grad.addColorStop(0.5,'#009900');grad.addColorStop(0.75,'#FFCC00');grad.addColorStop(1,'#CC0000');
+      } else {
+        grad.addColorStop(0,'#1A5C3A');grad.addColorStop(0.4,'#F5C842');grad.addColorStop(0.7,'#4FC3F7');grad.addColorStop(1,'#1A5C3A');
+      }
+      ctx.save();
+      ctx.strokeStyle=grad;
+      ctx.lineWidth=t;
+      ctx.beginPath();
+      ctx.arc(r,r,r-(t/2),0,Math.PI*2);
+      ctx.stroke();
+      ctx.restore();
+    } else {
+      BORDERS[selBorder].draw(ctx,cv.width,cv.height);
+    }
+  }
   styled=true;
   document.getElementById('dlBtn').disabled=false;
   setStep(2,'done'); setStep(3,'active');
