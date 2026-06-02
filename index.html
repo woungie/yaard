@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>YAARD — Caribbean PFP Generator</title>
 <meta name="description" content="The Caribbean's first aesthetic profile picture generator. Choose your aesthetic, style your photo, and download your PFP. Free, private, made in Jamaica.">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=Permanent+Marker&display=swap" rel="stylesheet">
 <style>
 :root {
   --gold:#F5C842; --rust:#D4522A; --green:#1A5C3A;
@@ -279,7 +279,6 @@ input[type=file]{display:none;}
       <div class="shape-row">
         <button class="shape-btn active" id="shSq" onclick="setShape('square')">◻ Square</button>
         <button class="shape-btn" id="shCi" onclick="setShape('circle')">◯ Circle</button>
-        <button class="shape-btn" id="shPo" onclick="setShape('portrait')">▯ Portrait</button>
       </div>
 
       <p style="font-size:11px;color:#888;margin-bottom:8px;font-family:'Syne',sans-serif;text-transform:uppercase;letter-spacing:.12em;">Filter</p>
@@ -288,7 +287,7 @@ input[type=file]{display:none;}
       <p style="font-size:11px;color:#888;margin-bottom:8px;margin-top:10px;font-family:'Syne',sans-serif;text-transform:uppercase;letter-spacing:.12em;">Border Frame</p>
       <div class="filter-row" id="borderRow"></div>
 
-      <p style="font-size:11px;color:#888;margin-bottom:8px;margin-top:10px;font-family:'Syne',sans-serif;text-transform:uppercase;letter-spacing:.12em;">Overlay (40%)</p>
+      <p style="font-size:11px;color:#888;margin-bottom:8px;margin-top:10px;font-family:'Syne',sans-serif;text-transform:uppercase;letter-spacing:.12em;">BONAFIDE Text</p>
       <div class="filter-row" id="overlayRow"></div>
 
       <div class="int-row">
@@ -427,30 +426,55 @@ const BORDERS=[
   }}
 ];
 
-/* ── OVERLAYS ── */
+/* ── OVERLAYS — BONAFIDE text watermark ── */
+function drawBonafide(ctx,w,h,fillStyle,outlineColor='rgba(0,0,0,0.85)'){
+  const isCircle=shape==='circle';
+  const fs=Math.round(w*(isCircle?0.09:0.13));
+  const bottomPad=Math.round(h*(isCircle?0.1:0.04));
+  ctx.save();
+  ctx.font=`900 ${fs}px 'Permanent Marker', cursive`;
+  ctx.textAlign='center';
+  ctx.textBaseline='bottom';
+  // Outline
+  ctx.strokeStyle=outlineColor;
+  ctx.lineWidth=Math.round(fs*0.12);
+  ctx.lineJoin='round';
+  ctx.strokeText('BONAFIDE',w/2,h-bottomPad);
+  // Fill
+  ctx.fillStyle=fillStyle;
+  ctx.fillText('BONAFIDE',w/2,h-bottomPad);
+  ctx.restore();
+}
+
 const OVERLAYS=[
   {id:'none', name:'None', draw:()=>{}},
-  {id:'haze', name:'🌅 Warm Haze', draw:(ctx,w,h)=>{
-    ctx.fillStyle='rgba(245,180,60,0.40)'; ctx.fillRect(0,0,w,h);
+  {id:'black', name:'⬛ Black', draw:(ctx,w,h)=>{
+    drawBonafide(ctx,w,h,'#000000','rgba(255,255,255,0.9)');
   }},
-  {id:'green', name:'🌿 Green Tint', draw:(ctx,w,h)=>{
-    ctx.fillStyle='rgba(26,92,58,0.40)'; ctx.fillRect(0,0,w,h);
+  {id:'jamaica', name:'🇯🇲 Jamaica', draw:(ctx,w,h)=>{
+    const grad=ctx.createLinearGradient(w*0.1,0,w*0.9,0);
+    grad.addColorStop(0,'#000000'); grad.addColorStop(0.4,'#009B3A');
+    grad.addColorStop(0.7,'#FED100'); grad.addColorStop(1,'#000000');
+    drawBonafide(ctx,w,h,grad);
   }},
-  {id:'shimmer', name:'💫 Shimmer', draw:(ctx,w,h)=>{
-    const id=ctx.getImageData(0,0,w,h);
-    for(let i=0;i<id.data.length;i+=4){
-      const n=(Math.random()-0.5)*30;
-      id.data[i]=Math.min(255,Math.max(0,id.data[i]+n));
-      id.data[i+1]=Math.min(255,Math.max(0,id.data[i+1]+n));
-      id.data[i+2]=Math.min(255,Math.max(0,id.data[i+2]+n));
-    }
-    ctx.putImageData(id,0,0);
+  {id:'trinidad', name:'🇹🇹 Trinidad', draw:(ctx,w,h)=>{
+    const grad=ctx.createLinearGradient(w*0.1,0,w*0.9,0);
+    grad.addColorStop(0,'#CE1126'); grad.addColorStop(0.5,'#FFFFFF');
+    grad.addColorStop(1,'#CE1126');
+    drawBonafide(ctx,w,h,grad);
   }},
-  {id:'vignette', name:'🌑 Vignette', draw:(ctx,w,h)=>{
-    const rad=ctx.createRadialGradient(w/2,h/2,h*0.3,w/2,h/2,h*0.85);
-    rad.addColorStop(0,'rgba(0,0,0,0)');
-    rad.addColorStop(1,'rgba(0,0,0,0.65)');
-    ctx.fillStyle=rad; ctx.fillRect(0,0,w,h);
+  {id:'barbados', name:'🇧🇧 Barbados', draw:(ctx,w,h)=>{
+    const grad=ctx.createLinearGradient(w*0.1,0,w*0.9,0);
+    grad.addColorStop(0,'#00338D'); grad.addColorStop(0.4,'#F5C518');
+    grad.addColorStop(0.7,'#000000'); grad.addColorStop(1,'#00338D');
+    drawBonafide(ctx,w,h,grad);
+  }},
+  {id:'panafri', name:'🌈 Pan-African', draw:(ctx,w,h)=>{
+    const grad=ctx.createLinearGradient(w*0.1,0,w*0.9,0);
+    grad.addColorStop(0,'#CC0000'); grad.addColorStop(0.25,'#FF0000');
+    grad.addColorStop(0.5,'#009900'); grad.addColorStop(0.75,'#FFCC00');
+    grad.addColorStop(1,'#CC0000');
+    drawBonafide(ctx,w,h,grad);
   }}
 ];
 
@@ -569,7 +593,7 @@ function resetAll(){
   selStyle=null;selFilter=0;selBorder=0;selOverlay=0;shape='square';intensity=80;origImg=null;styled=false;
   document.getElementById('intSlider').value=80;
   document.getElementById('intVal').textContent='80%';
-  ['shSq','shCi','shPo'].forEach((id,i)=>document.getElementById(id).classList.toggle('active',i===0));
+  ['shSq','shCi'].forEach((id,i)=>document.getElementById(id).classList.toggle('active',i===0));
   buildBorderRow(); buildOverlayRow();
 }
 
@@ -648,7 +672,6 @@ function setShape(sh){
   shape=sh;
   document.getElementById('shSq').classList.toggle('active',sh==='square');
   document.getElementById('shCi').classList.toggle('active',sh==='circle');
-  document.getElementById('shPo').classList.toggle('active',sh==='portrait');
   if(origImg){drawOrig();applyFilter();}
 }
 
@@ -721,6 +744,9 @@ function applyFilter(){
   document.getElementById('dlBtn').disabled=false;
   setStep(2,'done'); setStep(3,'active');
 }
+
+// Preload Permanent Marker font so canvas renders it correctly
+document.fonts.load("900 40px 'Permanent Marker'").catch(()=>{});
 
 // Initialise rows
 buildBorderRow();
