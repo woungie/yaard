@@ -128,6 +128,16 @@ input[type=file]{display:none;}
 .btn-dl:hover{opacity:.85;}
 .btn-dl:disabled{opacity:.3;cursor:not-allowed;}
 
+.btn-platform{
+  padding:10px 8px;background:#1a1a1a;color:#aaa;
+  border:.5px solid #2a2a2a;border-radius:10px;
+  font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;
+  cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;
+  transition:all .15s;
+}
+.btn-platform:hover{border-color:#F5C842;color:#F5C842;}
+.btn-platform:disabled{opacity:.3;cursor:not-allowed;}
+
 /* privacy note */
 .priv-note{display:flex;align-items:flex-start;gap:8px;background:rgba(26,92,58,.2);border:.5px solid rgba(26,92,58,.4);border-radius:10px;padding:.65rem .9rem;font-size:11px;color:#888;line-height:1.5;margin-bottom:1rem;position:relative;z-index:1;}
 .priv-note-icon{color:var(--green);font-size:14px;flex-shrink:0;margin-top:1px;}
@@ -290,6 +300,16 @@ input[type=file]{display:none;}
       <p style="font-size:11px;color:#888;margin-bottom:8px;margin-top:10px;font-family:'Syne',sans-serif;text-transform:uppercase;letter-spacing:.12em;">BONAFIDE Text</p>
       <div class="filter-row" id="overlayRow"></div>
 
+      <p style="font-size:11px;color:#888;margin-bottom:8px;margin-top:10px;font-family:'Syne',sans-serif;text-transform:uppercase;letter-spacing:.12em;">✨ Special Effects</p>
+      <div class="filter-row" id="fxRow"></div>
+
+      <p style="font-size:11px;color:#888;margin-bottom:8px;margin-top:10px;font-family:'Syne',sans-serif;text-transform:uppercase;letter-spacing:.12em;">🎬 Animated GIF Theme</p>
+      <div style="background:rgba(245,200,66,.06);border:.5px solid rgba(245,200,66,.2);border-radius:8px;padding:.55rem .85rem;margin-bottom:.75rem;font-size:11px;color:#aaa;line-height:1.5;">
+        Pick a theme, click <strong style="color:#F5C842;">Preview Animation</strong> to see it live, then <strong style="color:#F5C842;">Download GIF</strong> — takes ~5 seconds to generate.
+      </div>
+      <div class="filter-row" id="animRow"></div>
+      <canvas id="cvAnim" style="display:none;"></canvas>
+
       <div class="int-row">
         <label>Intensity</label>
         <input type="range" id="intSlider" min="0" max="100" value="80" step="1" oninput="onInt(this.value)">
@@ -298,7 +318,54 @@ input[type=file]{display:none;}
 
       <div class="action-row">
         <button class="btn-apply" id="applyBtn" onclick="applyFilter()">✦ Apply Style</button>
-        <button class="btn-dl" id="dlBtn" disabled onclick="downloadAndDestroy()">⬇ Download PFP</button>
+        <button class="btn-dl" id="dlBtn" disabled onclick="downloadAndDestroy('pfp')">⬇ Download PFP</button>
+      </div>
+
+      <!-- ANIMATION BUTTONS -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:.75rem;position:relative;z-index:1;">
+        <button class="btn-platform" id="previewAnimBtn" disabled onclick="previewAnim()">
+          <span style="font-size:16px;">▶️</span>
+          <span>Preview Animation</span>
+          <span style="font-size:10px;opacity:.7;">live on canvas</span>
+        </button>
+        <button class="btn-platform" id="dlGifBtn" disabled onclick="downloadGIF()">
+          <span style="font-size:16px;">🎬</span>
+          <span>Download GIF</span>
+          <span style="font-size:10px;opacity:.7;" id="gifStatus">~5 seconds</span>
+        </button>
+      </div>
+
+      <!-- WATERMARK TOGGLE -->
+      <div style="display:flex;align-items:center;gap:10px;margin-top:.75rem;padding:.6rem .85rem;background:rgba(255,255,255,.05);border-radius:8px;position:relative;z-index:1;">
+        <input type="checkbox" id="wmToggle" onchange="if(origImg&&selStyle)applyFilter()" style="width:16px;height:16px;accent-color:#F5C842;cursor:pointer;">
+        <label for="wmToggle" style="font-size:12px;color:#aaa;cursor:pointer;flex:1;">Add <strong style="color:#F5C842">yaardja.com</strong> watermark <span style="color:#555;font-size:10px;">(helps grow YAARD 🌴)</span></label>
+      </div>
+
+      <!-- SAVE FOR PLATFORMS -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:.75rem;position:relative;z-index:1;">
+        <button class="btn-platform" id="tikBtn" disabled onclick="downloadAndDestroy('tiktok')">
+          <span style="font-size:16px;">🎵</span>
+          <span>Save for TikTok</span>
+          <span style="font-size:10px;opacity:.7;">1:1 circle</span>
+        </button>
+        <button class="btn-platform" id="igBtn" disabled onclick="downloadAndDestroy('instagram')">
+          <span style="font-size:16px;">📸</span>
+          <span>Save for Instagram</span>
+          <span style="font-size:10px;opacity:.7;">1:1 square</span>
+        </button>
+      </div>
+      <div style="font-size:10px;color:#555;text-align:center;margin-top:.4rem;line-height:1.5;position:relative;z-index:1;">
+        🔒 All saves destroy your photo immediately after. No data sent to any platform.
+      </div>
+
+      <!-- AURA SCORE -->
+      <div id="auraBox" style="display:none;margin-top:1rem;background:#0D0D0D;border-radius:14px;padding:1.1rem;text-align:center;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:-40px;left:50%;transform:translateX(-50%);width:160px;height:160px;background:radial-gradient(circle,rgba(245,200,66,.18),transparent 65%);pointer-events:none;"></div>
+        <div style="font-size:11px;color:#555;text-transform:uppercase;letter-spacing:.12em;margin-bottom:.4rem;font-family:'Syne',sans-serif;">Aura Reading</div>
+        <div id="auraScore" style="font-family:'Syne',sans-serif;font-size:2.8rem;font-weight:800;color:#F5C842;line-height:1;margin-bottom:.3rem;"></div>
+        <div id="auraTitle" style="font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;color:white;margin-bottom:.3rem;"></div>
+        <div id="auraDesc" style="font-size:12px;color:#888;line-height:1.5;margin-bottom:.75rem;"></div>
+        <button onclick="copyAura()" style="padding:6px 16px;background:rgba(245,200,66,.15);border:0.5px solid #F5C842;color:#F5C842;border-radius:100px;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;" id="copyAuraBtn">Copy Score 📋</button>
       </div>
     </div>
 
@@ -324,6 +391,17 @@ input[type=file]{display:none;}
     <div class="tips-box" id="tipsBox"><div class="tips-loading"><div class="spin"></div> Claude is styling your look…</div></div>
     <div class="kw-title">Pinterest keywords to use</div>
     <div class="kw-tags" id="kwTags"></div>
+    <div style="display:flex;gap:8px;margin-top:.85rem;flex-wrap:wrap;">
+      <button onclick="copyKeywords()" id="copyKwBtn" style="display:flex;align-items:center;gap:6px;padding:8px 16px;background:rgba(245,200,66,.12);border:.5px solid rgba(245,200,66,.4);color:#F5C842;border-radius:100px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;">
+        📋 Copy Keywords
+      </button>
+      <button onclick="pinToPinterest()" id="pinBtn" style="display:flex;align-items:center;gap:6px;padding:8px 16px;background:rgba(230,0,35,.12);border:.5px solid rgba(230,0,35,.4);color:#E60023;border-radius:100px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;">
+        📌 Pin to Pinterest
+      </button>
+    </div>
+    <div id="pinNote" style="display:none;font-size:11px;color:#888;margin-top:.5rem;line-height:1.5;">
+      💡 Pinterest will open with your keywords ready. Upload your downloaded PFP there to complete the pin.
+    </div>
   </div>
 </section>
 
@@ -427,22 +505,23 @@ const BORDERS=[
 ];
 
 /* ── OVERLAYS — BONAFIDE text watermark ── */
-function drawBonafide(ctx,w,h,fillStyle,outlineColor='rgba(0,0,0,0.85)'){
+function drawBonafide(ctx,w,h,fillStyle,outlineColor='rgba(0,0,0,0.92)'){
   const isCircle=shape==='circle';
-  const fs=Math.round(w*(isCircle?0.09:0.13));
-  const bottomPad=Math.round(h*(isCircle?0.1:0.04));
+  const isStepOut=selFX==='stepout';
+  // Step Out: smaller font, positioned higher inside the frame
+  const fs=Math.round(w*(isCircle?0.09:isStepOut?0.09:0.13));
+  const burst=isStepOut?Math.round(400*0.28):0;
+  const textY=isStepOut?(burst+400-Math.round(400*0.18)):(h-Math.round(h*(isCircle?0.1:0.04)));
   ctx.save();
   ctx.font=`900 ${fs}px 'Permanent Marker', cursive`;
   ctx.textAlign='center';
   ctx.textBaseline='bottom';
-  // Outline
   ctx.strokeStyle=outlineColor;
   ctx.lineWidth=Math.round(fs*0.12);
   ctx.lineJoin='round';
-  ctx.strokeText('BONAFIDE',w/2,h-bottomPad);
-  // Fill
+  ctx.strokeText('BONAFIDE',w/2,textY);
   ctx.fillStyle=fillStyle;
-  ctx.fillText('BONAFIDE',w/2,h-bottomPad);
+  ctx.fillText('BONAFIDE',w/2,textY);
   ctx.restore();
 }
 
@@ -477,6 +556,75 @@ const OVERLAYS=[
     drawBonafide(ctx,w,h,grad);
   }}
 ];
+
+/* ── SPECIAL EFFECTS ── */
+const SPECIAL_FX=[
+  {id:'none', name:'None'},
+  {id:'anime', name:'🎌 Ghibli Soft'},
+  {id:'stepout', name:'⬆️ Step Out (Square)'}
+];
+
+/* ── ANIMATION THEMES ── */
+const ANIM_THEMES=[
+  {id:'none', name:'None'},
+  {id:'jamaica', name:'🇯🇲 Jamaica Glow'},
+  {id:'stargirl', name:'💫 Star Girl'},
+  {id:'ocean', name:'🌊 Ocean Vibes'},
+  {id:'petals', name:'🌸 Petal Rain'}
+];
+
+let animRAF=null;
+let animRunning=false;
+
+/* ── AURA DATA ── */
+const AURA_TIERS=[
+  {min:95,title:'Caribbean Royalty 👑',desc:'Your aura is undeniable. Pure island energy.'},
+  {min:90,title:'Certified Bonafide 🌴',desc:'Dripping in Caribbean excellence.'},
+  {min:85,title:'Island Legend 🔥',desc:'The vibes are immaculate. People feel you.'},
+  {min:80,title:'Tropic Goddess ✨',desc:'Melanin poppin\', aura locked in.'},
+  {min:75,title:'Yaad Royalty 💛',desc:'Yuh bad. The island claims you.'},
+  {min:70,title:'Rising Star 🌟',desc:'The glow-up is real. Keep going.'},
+  {min:60,title:'Almost There 🌊',desc:'Potential is showing. Add a Caribbean frame.'},
+  {min:0, title:'No Aura 💀',desc:'Respectfully... try again with a border frame.'}
+];
+
+function getAuraScore(){
+  // Weighted scoring — Caribbean frames boost score
+  let base=Math.floor(Math.random()*25)+65;
+  if(selBorder>0) base+=Math.floor(Math.random()*10)+8;
+  if(selBorder===1) base+=5; // Jamaica bonus
+  if(selOverlay>0) base+=3;
+  if(selFX==='stepout') base+=4;
+  if(selFX==='caribanime') base+=4;
+  return Math.min(99,base);
+}
+
+/* ── BASE FILTERS (for anime effects) ── */
+const BASES=[
+  {id:'neutral', name:'Neutral'},
+  {id:'bw', name:'⬛ B&W'},
+  {id:'vignette', name:'🌑 Vignette'}
+];
+
+function applyBase(ctx,w,h,baseId){
+  if(baseId==='bw'){
+    const id=ctx.getImageData(0,0,w,h);
+    const d=id.data;
+    for(let i=0;i<d.length;i+=4){
+      const g=0.299*d[i]+0.587*d[i+1]+0.114*d[i+2];
+      // Boost contrast on the greyscale
+      const gc=Math.min(255,Math.max(0,(g-128)*1.25+128));
+      d[i]=d[i+1]=d[i+2]=gc;
+    }
+    ctx.putImageData(id,0,0);
+  } else if(baseId==='vignette'){
+    const vig=ctx.createRadialGradient(w/2,h/2,h*0.2,w/2,h/2,h*0.78);
+    vig.addColorStop(0,'rgba(0,0,0,0)');
+    vig.addColorStop(1,'rgba(0,0,0,0.6)');
+    ctx.fillStyle=vig; ctx.fillRect(0,0,w,h);
+  }
+  // neutral = no-op
+}
 
 /* ── STYLES (4 aesthetics, 2 filters each) ── */
 const STYLES=[
@@ -528,7 +676,7 @@ const GALLERY=[
 ];
 
 /* ── STATE ── */
-let selStyle=null,selFilter=0,selBorder=0,selOverlay=0,shape='square',intensity=80,origImg=null,styled=false;
+let selStyle=null,selFilter=0,selBorder=0,selOverlay=0,selFX='none',selAnim='none',selBase='neutral',shape='square',intensity=80,origImg=null,styled=false;
 
 /* ── CANVAS GRADING ── */
 function grade(data,alpha,cfg){
@@ -553,26 +701,82 @@ function grade(data,alpha,cfg){
   }
 }
 
+/* ── WATERMARK ── */
+function drawWatermark(ctx,w,h){
+  const fs=Math.round(w*0.04);
+  ctx.save();
+  ctx.font=`500 ${fs}px 'DM Sans', sans-serif`;
+  ctx.textAlign='right';
+  ctx.textBaseline='bottom';
+  ctx.fillStyle='rgba(255,255,255,0.55)';
+  ctx.fillText('yaardja.com',w-Math.round(w*0.025),h-Math.round(h*0.02));
+  ctx.restore();
+}
+
 /* ── DESTROY ── */
 function destroyPhoto(){
-  ['cvOrig','cvOut'].forEach(id=>{
+  ['cvOrig','cvOut','cvTik','cvIg'].forEach(id=>{
     const cv=document.getElementById(id);
+    if(!cv) return;
     cv.getContext('2d').clearRect(0,0,cv.width,cv.height);
     cv.width=1; cv.height=1;
   });
   if(origImg){origImg.src='';origImg=null;}
   styled=false;
+  stopAnim();
   document.getElementById('fi').value='';
   document.getElementById('dlBtn').disabled=true;
+  document.getElementById('tikBtn').disabled=true;
+  document.getElementById('igBtn').disabled=true;
+  document.getElementById('previewAnimBtn').disabled=true;
+  document.getElementById('dlGifBtn').disabled=true;
 }
 
-function downloadAndDestroy(){
+function downloadAndDestroy(platform='pfp'){
   if(!styled) return;
-  const cv=document.getElementById('cvOut');
+  const cvSrc=document.getElementById('cvOut');
+  const wm=document.getElementById('wmToggle').checked;
+
+  // Create export canvas
+  const cvEx=document.createElement('canvas');
+  const size=400;
+
+  if(platform==='tiktok'){
+    // TikTok: 1:1 circle crop
+    cvEx.width=size; cvEx.height=size;
+    const ctx=cvEx.getContext('2d');
+    ctx.clearRect(0,0,size,size);
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(size/2,size/2,size/2,0,Math.PI*2);
+    ctx.clip();
+    ctx.drawImage(cvSrc,0,0,size,size);
+    ctx.restore();
+    if(wm) drawWatermark(ctx,size,size);
+  } else if(platform==='instagram'){
+    // Instagram: 1:1 square
+    cvEx.width=size; cvEx.height=size;
+    const ctx=cvEx.getContext('2d');
+    ctx.clearRect(0,0,size,size);
+    ctx.drawImage(cvSrc,0,0,size,size);
+    if(wm) drawWatermark(ctx,size,size);
+  } else {
+    // Standard PFP download — use canvas as-is
+    cvEx.width=cvSrc.width; cvEx.height=cvSrc.height;
+    const ctx=cvEx.getContext('2d');
+    ctx.drawImage(cvSrc,0,0);
+    if(wm) drawWatermark(ctx,cvEx.width,cvEx.height);
+  }
+
+  const filename=platform==='tiktok'?'yaard-tiktok-bonafide.png':
+                 platform==='instagram'?'yaard-instagram-pfp.png':
+                 'yaard-pfp-'+(selStyle?selStyle.id:'photo')+'.png';
+
   const a=document.createElement('a');
-  a.download='yaard-pfp-'+(selStyle?selStyle.id:'photo')+'.png';
-  a.href=cv.toDataURL('image/png');
+  a.download=filename;
+  a.href=cvEx.toDataURL('image/png');
   a.click();
+
   setTimeout(()=>{
     destroyPhoto();
     document.getElementById('editSection').style.display='none';
@@ -586,15 +790,21 @@ function resetAll(){
   document.getElementById('uploadZone').style.display='block';
   document.getElementById('editSection').style.display='none';
   document.getElementById('resultArea').classList.remove('show');
+  document.getElementById('pinNote').style.display='none';
   ['s0','s1','s2','s3'].forEach((id,i)=>{
     document.getElementById(id).className='step'+(i===0?' active':'');
   });
   document.querySelectorAll('.style-card').forEach(c=>c.classList.remove('active'));
-  selStyle=null;selFilter=0;selBorder=0;selOverlay=0;shape='square';intensity=80;origImg=null;styled=false;
+  selStyle=null;selFilter=0;selBorder=0;selOverlay=0;selFX='none';selAnim='none';selBase='neutral';shape='square';intensity=80;origImg=null;styled=false;
+  stopAnim();
   document.getElementById('intSlider').value=80;
   document.getElementById('intVal').textContent='80%';
   ['shSq','shCi'].forEach((id,i)=>document.getElementById(id).classList.toggle('active',i===0));
-  buildBorderRow(); buildOverlayRow();
+  buildBorderRow(); buildOverlayRow(); buildFXRow(); buildBaseRow();
+  document.getElementById('auraBox').style.display='none';
+  document.getElementById('wmToggle').checked=false;
+  document.getElementById('tikBtn').disabled=true;
+  document.getElementById('igBtn').disabled=true;
 }
 
 function setStep(n,state){
@@ -667,7 +877,293 @@ function buildOverlayRow(){
   });
 }
 
-/* ── SHAPE ── */
+/* ── BASE ROW ── */
+function buildBaseRow(){
+  const br=document.getElementById('baseRow'); br.innerHTML='';
+  BASES.forEach(b=>{
+    const btn=document.createElement('button');
+    btn.className='filter-btn'+(b.id===selBase?' active':'');
+    btn.textContent=b.name;
+    btn.onclick=()=>{selBase=b.id;buildBaseRow();if(origImg)applyFilter();};
+    br.appendChild(btn);
+  });
+}
+
+/* ── ANIM ROW ── */
+function buildAnimRow(){
+  const ar=document.getElementById('animRow'); ar.innerHTML='';
+  ANIM_THEMES.forEach(a=>{
+    const btn=document.createElement('button');
+    btn.className='filter-btn'+(a.id===selAnim?' active':'');
+    btn.textContent=a.name;
+    btn.onclick=()=>{
+      selAnim=a.id;
+      stopAnim();
+      buildAnimRow();
+      const en=a.id!=='none'&&styled;
+      document.getElementById('previewAnimBtn').disabled=!en;
+      document.getElementById('dlGifBtn').disabled=!en;
+    };
+    ar.appendChild(btn);
+  });
+}
+
+/* ── ANIMATION ENGINE ── */
+const PARTICLES=[];
+
+function stopAnim(){
+  if(animRAF){cancelAnimationFrame(animRAF);animRAF=null;}
+  animRunning=false;
+}
+
+function previewAnim(){
+  if(!styled||selAnim==='none') return;
+  stopAnim();
+  const cv=document.getElementById('cvOut');
+  const ctx=cv.getContext('2d');
+  const w=cv.width,h=cv.height;
+
+  // Seed particles
+  PARTICLES.length=0;
+  const count=selAnim==='ocean'?8:40;
+  for(let i=0;i<count;i++) PARTICLES.push(newParticle(w,h,selAnim,true));
+
+  animRunning=true;
+  let frame=0;
+
+  // Snapshot the styled photo
+  const snap=document.createElement('canvas');
+  snap.width=w; snap.height=h;
+  snap.getContext('2d').drawImage(cv,0,0);
+
+  function loop(){
+    if(!animRunning) return;
+    ctx.clearRect(0,0,w,h);
+    ctx.drawImage(snap,0,0); // redraw base photo
+    drawParticles(ctx,w,h,selAnim,frame);
+    updateParticles(w,h,selAnim);
+    frame++;
+    animRAF=requestAnimationFrame(loop);
+  }
+  loop();
+}
+
+function newParticle(w,h,theme,random){
+  const p={x:Math.random()*w, y:random?Math.random()*h:h+10};
+  if(theme==='jamaica'){
+    p.color=['#FED100','#009B3A','#FFFFFF'][Math.floor(Math.random()*3)];
+    p.size=Math.random()*3+1.5;
+    p.vx=(Math.random()-.5)*0.8;
+    p.vy=-(Math.random()*1.2+0.5);
+    p.life=1; p.decay=Math.random()*0.012+0.006;
+    p.type='sparkle';
+  } else if(theme==='stargirl'){
+    p.color=['#FFFFFF','#FED100','#FFD6E0'][Math.floor(Math.random()*3)];
+    p.size=Math.random()*3+1;
+    p.vx=(Math.random()-.5)*0.3;
+    p.vy=(Math.random()-.5)*0.3;
+    p.life=Math.random(); p.decay=Math.random()*0.015+0.005;
+    p.type='star'; p.twinkle=Math.random()*Math.PI*2;
+  } else if(theme==='ocean'){
+    p.x=0; p.y=Math.random()*h;
+    p.amp=Math.random()*15+8;
+    p.freq=Math.random()*0.02+0.01;
+    p.speed=Math.random()*0.8+0.4;
+    p.phase=Math.random()*Math.PI*2;
+    p.color=`rgba(79,195,247,${Math.random()*0.18+0.06})`;
+    p.width=w; p.type='wave';
+  } else if(theme==='petals'){
+    p.color=['#FFB6C1','#FFFFFF','#FFD6E0','#FF99BB'][Math.floor(Math.random()*4)];
+    p.size=Math.random()*6+3;
+    p.vx=(Math.random()-.5)*1.2;
+    p.vy=Math.random()*1.2+0.4;
+    p.rot=Math.random()*Math.PI*2;
+    p.rotV=(Math.random()-.5)*0.08;
+    p.life=1; p.decay=Math.random()*0.006+0.003;
+    p.type='petal';
+  }
+  return p;
+}
+
+function updateParticles(w,h,theme){
+  for(let i=PARTICLES.length-1;i>=0;i--){
+    const p=PARTICLES[i];
+    if(p.type==='wave'){
+      p.phase+=p.speed*0.05;
+    } else if(p.type==='star'){
+      p.x+=p.vx; p.y+=p.vy; p.twinkle+=0.08;
+      p.life+=p.decay*(Math.sin(p.twinkle)>0?-1:1);
+      if(p.life<=0||p.life>1) p.life=Math.random();
+    } else {
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.type==='petal'){p.rot+=p.rotV;}
+      p.life-=p.decay;
+      if(p.life<=0||p.y>h+20||p.y<-20){
+        PARTICLES.splice(i,1);
+        PARTICLES.push(newParticle(w,h,theme,false));
+      }
+    }
+  }
+}
+
+function drawParticles(ctx,w,h,theme,frame){
+  PARTICLES.forEach(p=>{
+    ctx.save();
+    ctx.globalAlpha=Math.max(0,p.life||0.8);
+    if(p.type==='sparkle'){
+      ctx.fillStyle=p.color;
+      ctx.shadowColor=p.color; ctx.shadowBlur=6;
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
+      ctx.fill();
+      // sparkle cross
+      ctx.strokeStyle=p.color; ctx.lineWidth=0.8;
+      ctx.beginPath();
+      ctx.moveTo(p.x-p.size*2,p.y); ctx.lineTo(p.x+p.size*2,p.y);
+      ctx.moveTo(p.x,p.y-p.size*2); ctx.lineTo(p.x,p.y+p.size*2);
+      ctx.stroke();
+    } else if(p.type==='star'){
+      const s=p.size*(0.6+0.4*Math.abs(Math.sin(p.twinkle)));
+      ctx.fillStyle=p.color;
+      ctx.shadowColor=p.color; ctx.shadowBlur=8;
+      drawStar(ctx,p.x,p.y,5,s,s*0.4);
+    } else if(p.type==='wave'){
+      ctx.strokeStyle=p.color;
+      ctx.lineWidth=1.5;
+      ctx.beginPath();
+      for(let x=0;x<w;x+=3){
+        const y=p.y+Math.sin(x*p.freq+p.phase)*p.amp;
+        x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+      }
+      ctx.stroke();
+    } else if(p.type==='petal'){
+      ctx.translate(p.x,p.y); ctx.rotate(p.rot);
+      ctx.fillStyle=p.color;
+      ctx.shadowColor=p.color; ctx.shadowBlur=4;
+      ctx.beginPath();
+      ctx.ellipse(0,0,p.size,p.size*0.45,0,0,Math.PI*2);
+      ctx.fill();
+    }
+    ctx.restore();
+  });
+}
+
+function drawStar(ctx,cx,cy,spikes,outerR,innerR){
+  let rot=Math.PI/2*3;
+  const step=Math.PI/spikes;
+  ctx.beginPath();
+  ctx.moveTo(cx,cy-outerR);
+  for(let i=0;i<spikes;i++){
+    ctx.lineTo(cx+Math.cos(rot)*outerR,cy+Math.sin(rot)*outerR); rot+=step;
+    ctx.lineTo(cx+Math.cos(rot)*innerR,cy+Math.sin(rot)*innerR); rot+=step;
+  }
+  ctx.lineTo(cx,cy-outerR); ctx.closePath(); ctx.fill();
+}
+
+/* ── GIF DOWNLOAD ── */
+async function downloadGIF(){
+  if(!styled||selAnim==='none') return;
+  stopAnim();
+
+  const gifBtn=document.getElementById('dlGifBtn');
+  const gifStatus=document.getElementById('gifStatus');
+  gifBtn.disabled=true;
+  gifStatus.textContent='Generating…';
+
+  const cv=document.getElementById('cvOut');
+  const w=cv.width,h=cv.height;
+
+  // Snapshot base photo
+  const snap=document.createElement('canvas');
+  snap.width=w; snap.height=h;
+  snap.getContext('2d').drawImage(cv,0,0);
+
+  // Seed particles
+  PARTICLES.length=0;
+  const count=selAnim==='ocean'?8:45;
+  for(let i=0;i<count;i++) PARTICLES.push(newParticle(w,h,selAnim,true));
+
+  // Capture frames
+  const totalFrames=30;
+  const frames=[];
+  const offscreen=document.createElement('canvas');
+  offscreen.width=w; offscreen.height=h;
+  const octx=offscreen.getContext('2d');
+
+  for(let f=0;f<totalFrames;f++){
+    octx.clearRect(0,0,w,h);
+    octx.drawImage(snap,0,0);
+    drawParticles(octx,w,h,selAnim,f);
+    updateParticles(w,h,selAnim);
+    frames.push(offscreen.toDataURL('image/png'));
+    gifStatus.textContent=`Capturing ${f+1}/${totalFrames}…`;
+    await new Promise(r=>setTimeout(r,0));
+  }
+
+  // Build GIF using gif.js CDN
+  gifStatus.textContent='Building GIF…';
+  await new Promise((resolve,reject)=>{
+    const script=document.createElement('script');
+    script.src='https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js';
+    script.onload=resolve; script.onerror=reject;
+    document.head.appendChild(script);
+  });
+
+  const gif=new GIF({workers:2,quality:8,width:w,height:h,workerScript:'https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js'});
+
+  for(const dataUrl of frames){
+    const img=new Image();
+    await new Promise(r=>{img.onload=r;img.src=dataUrl;});
+    gif.addFrame(img,{delay:60});
+  }
+
+  gif.on('finished',blob=>{
+    const a=document.createElement('a');
+    a.download='yaard-animated-'+selAnim+'.gif';
+    a.href=URL.createObjectURL(blob);
+    a.click();
+    gifBtn.disabled=false;
+    gifStatus.textContent='~5 seconds';
+    // Restart preview after download
+    previewAnim();
+  });
+
+  gif.render();
+}
+
+/* ── FX ROW ── */
+function buildFXRow(){
+  const fr=document.getElementById('fxRow'); fr.innerHTML='';
+  SPECIAL_FX.forEach((f)=>{
+    const btn=document.createElement('button');
+    btn.className='filter-btn'+(f.id===selFX?' active':'');
+    btn.textContent=f.name;
+    btn.onclick=()=>{selFX=f.id;buildFXRow();if(origImg)applyFilter();};
+    fr.appendChild(btn);
+  });
+}
+
+/* ── AURA SCORE ── */
+function showAura(){
+  const score=getAuraScore();
+  const tier=AURA_TIERS.find(t=>score>=t.min);
+  document.getElementById('auraScore').textContent=score+'%';
+  document.getElementById('auraTitle').textContent=tier.title;
+  document.getElementById('auraDesc').textContent=tier.desc;
+  document.getElementById('auraBox').style.display='block';
+  document.getElementById('auraBox')._score=score;
+  document.getElementById('auraBox')._tier=tier;
+}
+
+function copyAura(){
+  const score=document.getElementById('auraBox')._score;
+  const tier=document.getElementById('auraBox')._tier;
+  const txt=`My YAARD PFP Aura Score: ${score}% — ${tier.title}\nGenerate yours at yaardja.com 🌴`;
+  navigator.clipboard?.writeText(txt).then(()=>{
+    document.getElementById('copyAuraBtn').textContent='Copied! 🎉';
+    setTimeout(()=>document.getElementById('copyAuraBtn').textContent='Copy Score 📋',2000);
+  });
+}
 function setShape(sh){
   shape=sh;
   document.getElementById('shSq').classList.toggle('active',sh==='square');
@@ -701,48 +1197,161 @@ function drawOrig(){ drawToCanvas(document.getElementById('cvOrig'),origImg); }
 function applyFilter(){
   if(!origImg||!selStyle) return;
   const cv=document.getElementById('cvOut');
-  drawToCanvas(cv,origImg);
-  const ctx=cv.getContext('2d');
-  // Apply colour grade filter
-  const id=ctx.getImageData(0,0,cv.width,cv.height);
-  selStyle.filters[selFilter].fn(id,intensity);
-  ctx.putImageData(id,0,0);
-  // Apply overlay
-  OVERLAYS[selOverlay].draw(ctx,cv.width,cv.height);
-  // Apply border frame
-  if(selBorder>0){
-    if(shape==='circle'){
-      // For circle: draw border as a thick ring stroke around the circle edge
-      const t=Math.round(cv.width*0.055);
-      const r=cv.width/2;
-      // Build gradient for stroke
-      const grad=ctx.createLinearGradient(0,0,cv.width,cv.height);
-      const b=BORDERS[selBorder];
-      if(b.id==='jamaica'){
-        grad.addColorStop(0,'#000000');grad.addColorStop(0.4,'#009B3A');grad.addColorStop(0.7,'#FED100');grad.addColorStop(1,'#000000');
-      } else if(b.id==='trinidad'){
-        grad.addColorStop(0,'#CE1126');grad.addColorStop(0.5,'#FFFFFF');grad.addColorStop(1,'#CE1126');
-      } else if(b.id==='barbados'){
-        grad.addColorStop(0,'#00338D');grad.addColorStop(0.4,'#F5C518');grad.addColorStop(0.7,'#000000');grad.addColorStop(1,'#00338D');
-      } else if(b.id==='panafri'){
-        grad.addColorStop(0,'#CC0000');grad.addColorStop(0.25,'#FF0000');grad.addColorStop(0.5,'#009900');grad.addColorStop(0.75,'#FFCC00');grad.addColorStop(1,'#CC0000');
-      } else {
-        grad.addColorStop(0,'#1A5C3A');grad.addColorStop(0.4,'#F5C842');grad.addColorStop(0.7,'#4FC3F7');grad.addColorStop(1,'#1A5C3A');
+  const sz={w:400,h:400};
+
+  // Crop coords
+  const ar=origImg.width/origImg.height,cAr=sz.w/sz.h;
+  let sx=0,sy=0,sw=origImg.width,sh=origImg.height;
+  if(ar>cAr){sw=origImg.height*cAr;sx=(origImg.width-sw)/2;}
+  else{sh=origImg.width/cAr;sy=(origImg.height-sh)/2;}
+
+  {
+
+    if(selFX==='stepout'){
+      // Step Out — SQUARE ONLY
+      const burst=Math.round(sz.h*0.28);
+      cv.width=sz.w; cv.height=sz.h+burst;
+      const ctx2=cv.getContext('2d');
+      ctx2.fillStyle='#0A1A0F';
+      ctx2.fillRect(0,0,cv.width,cv.height);
+      ctx2.drawImage(origImg,sx,sy,sw,sh,0,0,sz.w,sz.h+burst);
+      const sid=ctx2.getImageData(0,0,cv.width,cv.height);
+      selStyle.filters[selFilter].fn(sid,intensity);
+      ctx2.putImageData(sid,0,0);
+      if(selBorder>0){
+        ctx2.save();
+        ctx2.beginPath(); ctx2.rect(0,burst,sz.w,sz.h); ctx2.clip();
+        BORDERS[selBorder].draw(ctx2,sz.w,sz.h+burst);
+        ctx2.restore();
       }
-      ctx.save();
-      ctx.strokeStyle=grad;
-      ctx.lineWidth=t;
-      ctx.beginPath();
-      ctx.arc(r,r,r-(t/2),0,Math.PI*2);
-      ctx.stroke();
-      ctx.restore();
+      OVERLAYS[selOverlay].draw(ctx2,cv.width,cv.height);
+      styled=true;
+      document.getElementById('dlBtn').disabled=false;
+      document.getElementById('tikBtn').disabled=false;
+      document.getElementById('igBtn').disabled=false;
+      setStep(2,'done'); setStep(3,'active');
+      showAura();
+      return; // exit early
+    }
+
+    // Normal draw for all other effects
+    drawToCanvas(cv,origImg);
+    const ctx=cv.getContext('2d');
+
+    // Helper: apply B&W conversion
+    function toBW(c,w2,h2){
+      const id2=c.getImageData(0,0,w2,h2);
+      const d2=id2.data;
+      for(let i=0;i<d2.length;i+=4){
+        const g=Math.min(255,Math.max(0,(0.299*d2[i]+0.587*d2[i+1]+0.114*d2[i+2]-128)*1.3+128));
+        d2[i]=d2[i+1]=d2[i+2]=g;
+      }
+      c.putImageData(id2,0,0);
+    }
+    // Helper: apply vignette
+    function toVignette(c,w2,h2){
+      const v=c.createRadialGradient(w2/2,h2/2,h2*0.2,w2/2,h2/2,h2*0.78);
+      v.addColorStop(0,'rgba(0,0,0,0)');
+      v.addColorStop(1,'rgba(0,0,0,0.65)');
+      c.fillStyle=v; c.fillRect(0,0,w2,h2);
+    }
+
+    const w=cv.width,h=cv.height;
+
+    if(selFX==='anime'){
+      // Ghibli Soft — neutral then vivid saturation
+      const id=ctx.getImageData(0,0,w,h); const d=id.data;
+      for(let i=0;i<d.length;i+=4){
+        d[i]=Math.min(255,Math.max(0,(d[i]-128)*1.1+128+5));
+        d[i+1]=Math.min(255,Math.max(0,(d[i+1]-128)*1.1+128+5));
+        d[i+2]=Math.min(255,Math.max(0,(d[i+2]-128)*1.1+128+5));
+        const gray=0.299*d[i]+0.587*d[i+1]+0.114*d[i+2];
+        const sat=1.55;
+        d[i]=Math.min(255,Math.max(0,gray+(d[i]-gray)*sat));
+        d[i+1]=Math.min(255,Math.max(0,gray+(d[i+1]-gray)*sat));
+        d[i+2]=Math.min(255,Math.max(0,gray+(d[i+2]-gray)*sat));
+        const lum=(d[i]+d[i+1]+d[i+2])/3;
+        if(lum>80&&lum<200){d[i]=Math.min(255,d[i]*0.92+18);d[i+1]=Math.min(255,d[i+1]*0.92+16);d[i+2]=Math.min(255,d[i+2]*0.92+12);}
+      }
+      ctx.putImageData(id,0,0);
+      const glow=ctx.createRadialGradient(w/2,h*0.35,h*0.08,w/2,h*0.35,h*0.55);
+      glow.addColorStop(0,'rgba(255,240,200,0.12)'); glow.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=glow; ctx.fillRect(0,0,w,h);
+
+    } else if(selFX==='darkskin_vignette'){
+      // Dark Skin — warm amber/brown cinematic grade
+      const id=ctx.getImageData(0,0,w,h); const d=id.data;
+      for(let i=0;i<d.length;i+=4){
+        // Moderate contrast
+        const contrast=1.45;
+        d[i]=Math.min(255,Math.max(0,(d[i]-128)*contrast+128));
+        d[i+1]=Math.min(255,Math.max(0,(d[i+1]-128)*contrast+128));
+        d[i+2]=Math.min(255,Math.max(0,(d[i+2]-128)*contrast+128));
+        // Warm amber shift — midtones only, narrow range
+        const lum=(d[i]+d[i+1]+d[i+2])/3;
+        if(lum>80&&lum<160){
+          d[i]=Math.min(255,d[i]*1.12);
+          d[i+1]=Math.min(255,d[i+1]*1.04);
+          d[i+2]=Math.max(0,d[i+2]*0.84);
+        }
+        // Moderate saturation
+        const sat=1.35;
+        const g2=0.299*d[i]+0.587*d[i+1]+0.114*d[i+2];
+        d[i]=Math.min(255,Math.max(0,g2+(d[i]-g2)*sat));
+        d[i+1]=Math.min(255,Math.max(0,g2+(d[i+1]-g2)*sat));
+        d[i+2]=Math.min(255,Math.max(0,g2+(d[i+2]-g2)*sat));
+      }
+      ctx.putImageData(id,0,0);
+      // Smooth cinematic vignette
+      const vign=ctx.createRadialGradient(w/2,h*0.45,h*0.28,w/2,h*0.45,h*0.85);
+      vign.addColorStop(0,'rgba(0,0,0,0)'); vign.addColorStop(1,'rgba(0,0,0,0.52)');
+      ctx.fillStyle=vign; ctx.fillRect(0,0,w,h);
+      // Subtle gold shimmer on face
+      const shine=ctx.createRadialGradient(w/2,h*0.3,0,w/2,h*0.3,h*0.38);
+      shine.addColorStop(0,'rgba(200,150,30,0.13)');
+      shine.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=shine; ctx.fillRect(0,0,w,h);
+
     } else {
-      BORDERS[selBorder].draw(ctx,cv.width,cv.height);
+      // Standard colour grade
+      const id=ctx.getImageData(0,0,w,h);
+      selStyle.filters[selFilter].fn(id,intensity);
+      ctx.putImageData(id,0,0);
+    }
+
+    // Apply overlay and border
+    OVERLAYS[selOverlay].draw(ctx,cv.width,cv.height);
+    if(selBorder>0){
+      if(shape==='circle'){
+        const t=Math.round(cv.width*0.055);
+        const r=cv.width/2;
+        const grad=ctx.createLinearGradient(0,0,cv.width,cv.height);
+        const b=BORDERS[selBorder];
+        if(b.id==='jamaica'){grad.addColorStop(0,'#000000');grad.addColorStop(0.4,'#009B3A');grad.addColorStop(0.7,'#FED100');grad.addColorStop(1,'#000000');}
+        else if(b.id==='trinidad'){grad.addColorStop(0,'#CE1126');grad.addColorStop(0.5,'#FFFFFF');grad.addColorStop(1,'#CE1126');}
+        else if(b.id==='barbados'){grad.addColorStop(0,'#00338D');grad.addColorStop(0.4,'#F5C518');grad.addColorStop(0.7,'#000000');grad.addColorStop(1,'#00338D');}
+        else if(b.id==='panafri'){grad.addColorStop(0,'#CC0000');grad.addColorStop(0.25,'#FF0000');grad.addColorStop(0.5,'#009900');grad.addColorStop(0.75,'#FFCC00');grad.addColorStop(1,'#CC0000');}
+        else{grad.addColorStop(0,'#1A5C3A');grad.addColorStop(0.4,'#F5C842');grad.addColorStop(0.7,'#4FC3F7');grad.addColorStop(1,'#1A5C3A');}
+        ctx.save();
+        ctx.strokeStyle=grad; ctx.lineWidth=t;
+        ctx.beginPath(); ctx.arc(r,r,r-(t/2),0,Math.PI*2); ctx.stroke();
+        ctx.restore();
+      } else {
+        BORDERS[selBorder].draw(ctx,cv.width,cv.height);
+      }
     }
   }
+
   styled=true;
   document.getElementById('dlBtn').disabled=false;
+  document.getElementById('tikBtn').disabled=false;
+  document.getElementById('igBtn').disabled=false;
+  if(selAnim!=='none'){
+    document.getElementById('previewAnimBtn').disabled=false;
+    document.getElementById('dlGifBtn').disabled=false;
+  }
   setStep(2,'done'); setStep(3,'active');
+  showAura();
 }
 
 // Preload Permanent Marker font so canvas renders it correctly
@@ -751,6 +1360,8 @@ document.fonts.load("900 40px 'Permanent Marker'").catch(()=>{});
 // Initialise rows
 buildBorderRow();
 buildOverlayRow();
+buildFXRow();
+buildAnimRow();
 
 /* ── FILE UPLOAD ── */
 document.getElementById('fi').addEventListener('change',function(e){
@@ -771,6 +1382,40 @@ document.getElementById('fi').addEventListener('change',function(e){
   };
   reader.readAsDataURL(file);
 });
+
+/* ── PINTEREST FUNCTIONS ── */
+function copyKeywords(){
+  const tags=document.getElementById('kwTags');
+  const keywords=Array.from(tags.querySelectorAll('.kw-tag')).map(t=>t.textContent).join(' ');
+  const full=keywords+' #yaardja #caribbeanpfp #bonafide';
+  navigator.clipboard?.writeText(full).then(()=>{
+    const btn=document.getElementById('copyKwBtn');
+    btn.textContent='✓ Copied!';
+    btn.style.background='rgba(26,92,58,.2)';
+    btn.style.borderColor='rgba(26,92,58,.5)';
+    btn.style.color='#4CAF50';
+    setTimeout(()=>{
+      btn.innerHTML='📋 Copy Keywords';
+      btn.style.background='rgba(245,200,66,.12)';
+      btn.style.borderColor='rgba(245,200,66,.4)';
+      btn.style.color='#F5C842';
+    },2000);
+  });
+}
+
+function pinToPinterest(){
+  const tags=document.getElementById('kwTags');
+  const keywords=Array.from(tags.querySelectorAll('.kw-tag')).map(t=>t.textContent).join(' ');
+  const desc=encodeURIComponent(
+    'Made with YAARD — Caribbean PFP Generator 🌴 '+keywords+' #yaardja #caribbeanpfp #bonafide — Create yours free at yaardja.com'
+  );
+  const siteUrl=encodeURIComponent('https://yaardja.com');
+  // Pinterest pin creation intent URL — opens Pinterest with description pre-filled
+  const pinterestUrl=`https://pinterest.com/pin/create/button/?url=${siteUrl}&description=${desc}`;
+  window.open(pinterestUrl,'_blank');
+  // Show the tip note
+  document.getElementById('pinNote').style.display='block';
+}
 
 /* ── TIPS (Claude API) ── */
 async function fetchTips(){
