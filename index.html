@@ -395,12 +395,6 @@ input[type=file]{display:none;}
       <button onclick="copyKeywords()" id="copyKwBtn" style="display:flex;align-items:center;gap:6px;padding:8px 16px;background:rgba(245,200,66,.12);border:.5px solid rgba(245,200,66,.4);color:#F5C842;border-radius:100px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;">
         📋 Copy Keywords
       </button>
-      <button onclick="pinToPinterest()" id="pinBtn" style="display:flex;align-items:center;gap:6px;padding:8px 16px;background:rgba(230,0,35,.12);border:.5px solid rgba(230,0,35,.4);color:#E60023;border-radius:100px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;">
-        📌 Pin to Pinterest
-      </button>
-    </div>
-    <div id="pinNote" style="display:none;font-size:11px;color:#888;margin-top:.5rem;line-height:1.5;">
-      💡 Pinterest will open with your keywords ready. Upload your downloaded PFP there to complete the pin.
     </div>
   </div>
 </section>
@@ -790,7 +784,6 @@ function resetAll(){
   document.getElementById('uploadZone').style.display='block';
   document.getElementById('editSection').style.display='none';
   document.getElementById('resultArea').classList.remove('show');
-  document.getElementById('pinNote').style.display='none';
   ['s0','s1','s2','s3'].forEach((id,i)=>{
     document.getElementById(id).className='step'+(i===0?' active':'');
   });
@@ -1401,20 +1394,6 @@ function copyKeywords(){
       btn.style.color='#F5C842';
     },2000);
   });
-}
-
-function pinToPinterest(){
-  const tags=document.getElementById('kwTags');
-  const keywords=Array.from(tags.querySelectorAll('.kw-tag')).map(t=>t.textContent).join(' ');
-  const desc=encodeURIComponent(
-    'Made with YAARD — Caribbean PFP Generator 🌴 '+keywords+' #yaardja #caribbeanpfp #bonafide — Create yours free at yaardja.com'
-  );
-  const siteUrl=encodeURIComponent('https://yaardja.com');
-  // Pinterest pin creation intent URL — opens Pinterest with description pre-filled
-  const pinterestUrl=`https://pinterest.com/pin/create/button/?url=${siteUrl}&description=${desc}`;
-  window.open(pinterestUrl,'_blank');
-  // Show the tip note
-  document.getElementById('pinNote').style.display='block';
 }
 
 /* ── TIPS (Claude API) ── */
